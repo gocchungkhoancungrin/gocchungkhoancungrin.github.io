@@ -30,8 +30,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git fetch -q --depth 1 origin stocks && git reset -q --soft FETCH_HEAD || true
+          git fetch -q --depth 1 origin stocks && git checkout -q -f -B stocks FETCH_HEAD || true
           python3 "$SCRIPT"
           git add -A
-          git commit -q -m "Dữ liệu cổ phiếu $(date -u +%H:%M) UTC" || true
+          MSG="Dữ liệu cổ phiếu $(date -u +%H:%M) UTC"
+          if git rev-parse -q --verify HEAD >/dev/null; then git commit -q --amend --allow-empty -m "$MSG"; else git commit -q -m "$MSG"; fi
           git push -q -f origin HEAD:stocks
