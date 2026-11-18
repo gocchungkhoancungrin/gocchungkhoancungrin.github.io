@@ -1,0 +1,50 @@
+name: Cập nhật số liệu thị trường
+
+on:
+  schedule:
+    # Mỗi 5 phút từ 09:00 đến 15:55 giờ Việt Nam (02:00 đến 08:55 UTC), thứ Hai đến thứ Sáu
+    - cron: '*/5 2-8 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data
+  cancel-in-progress: true
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lấy số liệu từ FPTS
+        run: |
+          mkdir -p data
+          curl -fsS --retry 3 --retry-delay 3 --max-time 20 \
+            "https://marketstream.fpts.com.vn/mdds/quote?Exchange=MDDS&TypeMsg=M1" \
+            -o data/quote.tmp
+          python3 - <<'PY'
+          import json, sys
+          d = json.load(open('data/quote.tmp', encoding='utf-8'))
+          codes = {x.get('Itc') for x in d.get('Data', [])}
+          need = {'001_STO', '101_STO', '002_STX'}
+          if d.get('Code') != 0 or not need <= codes:
+              sys.exit('Dữ liệu trả về không đủ VN-Index, VN30, HNX-Index')
+          PY
+          mv data/quote.tmp data/quote.json
+
+      - name: Lưu số liệu vào kho
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/quote.json
+          if git diff --cached --quiet; then
+            echo "Số liệu không đổi"
+          else
+            git commit -m "Cập nhật số liệu thị trường"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

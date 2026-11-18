@@ -375,7 +375,7 @@ footer b{color:var(--fg)}
   svg.innerHTML=out+'<path class="ln" d="'+line+'"/>';
 
   /* Số liệu thị trường: realtime từ FPTS marketstream, có số chốt phiên dự phòng */
-  var MKT_URL='https://marketstream.fpts.com.vn/mdds/quote?Exchange=MDDS&TypeMsg=M1';
+  var MKT_URL='https://raw.githubusercontent.com/gocchungkhoancungrin/gocchungkhoancungrin.github.io/main/data/quote.json';
   var MKT=[{code:'001_STO',name:'VN-Index'},{code:'101_STO',name:'VN30'},{code:'002_STX',name:'HNX-Index'}];
   var FALLBACK={date:'17/11/2026',rows:{
     '001_STO':{val:1726.72,pt:-10.17,pc:-0.59,tv:9596,up:110,flat:62,dec:207},
@@ -424,10 +424,10 @@ footer b{color:var(--fg)}
     var n=vnNow(), age=Date.now()-last.ms;
     var inHours=n.wd>=1&&n.wd<=5&&n.min>=540&&n.min<=900;
     var lunch=n.wd>=1&&n.wd<=5&&n.min>=690&&n.min<780;
-    if(inHours&&age<300000) setStatus('live','<b>Realtime (đang giao dịch)</b> · cập nhật '+last.clock);
-    else if(lunch&&age<4*3600*1000) setStatus('idle','Nghỉ giữa phiên · cập nhật lúc '+last.clock);
+    if(lunch&&age<4*3600*1000) setStatus('idle','Nghỉ giữa phiên · cập nhật lúc '+last.clock);
+    else if(inHours&&age<1200000) setStatus('live','<b>Đang giao dịch</b> · cập nhật lúc '+last.clock);
     else setStatus('idle','Chốt phiên '+last.date);
-    return inHours&&age<300000;
+    return inHours&&age<1200000;
   }
   function useFallback(){
     if(hasLive)return;
@@ -436,14 +436,14 @@ footer b{color:var(--fg)}
   function loadMarket(){
     var ctl=('AbortController' in window)?new AbortController():null;
     var timer=setTimeout(function(){if(ctl)ctl.abort()},8000);
-    return fetch(MKT_URL,{cache:'no-store',signal:ctl?ctl.signal:undefined})
+    return fetch(MKT_URL+'?t='+Date.now(),{cache:'no-store',signal:ctl?ctl.signal:undefined})
       .then(function(r){if(!r.ok)throw new Error('http');return r.json()})
       .then(function(j){clearTimeout(timer);return applyLive(j)})
       .catch(function(){clearTimeout(timer);useFallback();return false});
   }
   function loop(){
     loadMarket().then(function(live){
-      setTimeout(function(){ if(document.hidden){document.addEventListener('visibilitychange',function f(){document.removeEventListener('visibilitychange',f);loop()})}else{loop()} }, live?5000:60000);
+      setTimeout(function(){ if(document.hidden){document.addEventListener('visibilitychange',function f(){document.removeEventListener('visibilitychange',f);loop()})}else{loop()} }, 60000);
     });
   }
   renderTiles(FALLBACK.rows);
