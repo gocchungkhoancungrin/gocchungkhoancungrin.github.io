@@ -231,6 +231,26 @@ footer b{color:var(--fg)}
 #nganh td.sn span{display:block;font-size:13px;color:var(--muted);margin-top:2px;font-weight:400}
 #nganh td{vertical-align:middle}
 @media (max-width:900px){.brief-pts{grid-template-columns:1fr}.brief{padding:20px 18px}}
+
+.bk-lead{font-size:clamp(17px,2vw,20px);font-weight:700;line-height:1.4;margin-bottom:18px;text-wrap:balance}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.kpi .l{display:block;font-size:13px;color:var(--muted)}
+.kpi .v{display:block;font-family:var(--font-mono);font-weight:700;font-size:clamp(22px,2.6vw,28px);margin:4px 0 6px}
+.kpi .v small{font-size:.5em;font-weight:500;color:var(--muted);margin-left:4px}
+.kpi .d{font-size:12.5px;font-weight:600;font-family:var(--font-mono)}
+.kpi .d.good{color:var(--up)}.kpi .d.bad{color:var(--down)}.kpi .d.neu{color:var(--muted)}
+.kpi .d i{font-style:normal;font-weight:500;color:var(--muted);margin-left:6px;font-family:inherit}
+.tops{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.top-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.top-card h3{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:12px}
+.top-card h3 span{color:var(--muted);text-transform:none;letter-spacing:0;font-weight:500;margin-left:6px}
+.brow{display:grid;grid-template-columns:44px minmax(0,1fr) 64px;align-items:center;gap:10px;font-size:14px;margin-top:8px}
+.brow b{font-family:var(--font-mono);font-weight:700}
+.brow .bar{display:block;height:10px;border-radius:5px;background:var(--surface2);overflow:hidden}
+.brow .bar i{display:block;height:10px;border-radius:5px;background:linear-gradient(90deg,#4aa56b,var(--accent))}
+.brow .n{text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+@media (max-width:900px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.tops{grid-template-columns:1fr}}
 @media (max-width:820px){
   .hero-grid{grid-template-columns:1fr;gap:0;min-height:0;padding-top:12px}
   .hero-text{padding-block:24px 8px}
@@ -258,6 +278,7 @@ footer b{color:var(--fg)}
       <a href="#video">Video</a>
       <a href="#thi-truong">Thị trường</a>
       <a href="#nhan-dinh">Nhận định</a>
+      <a href="#ngan-hang">Ngân hàng</a>
       <a href="#nganh" id="nav-nganh" hidden>Ngành</a>
       <a href="#khuyen-nghi">Khuyến nghị</a>
       <a href="#lien-he">Liên hệ</a>
@@ -360,6 +381,17 @@ footer b{color:var(--fg)}
         </div>
         <p class="brief-note">Nhận định chỉ mang tính chất tham khảo, không phải lời mời mua hoặc bán.</p>
       </article>
+    </section>
+
+    <section id="ngan-hang">
+      <div class="sec-head">
+        <h2><em>04 /</em>Ngành ngân hàng</h2>
+        <span class="stamp" id="bk-stamp"></span>
+      </div>
+      <p class="bk-lead" id="bk-lead"></p>
+      <div class="kpis" id="bk-kpis"></div>
+      <div class="tops" id="bk-tops"></div>
+      <p class="brief-note" id="bk-note"></p>
     </section>
 
     <section id="nganh" hidden>
@@ -639,6 +671,49 @@ var SECTORS=[];
   document.getElementById('nganh-note').textContent='Mọi khuyến nghị chỉ mang tính chất tham khảo.'+(SECTOR_SRC?' Nguồn: '+SECTOR_SRC+'.':'');
   document.getElementById('nganh').hidden=false;document.getElementById('nav-nganh').hidden=false;
   draw();
+})();
+
+/* ===== Ngành ngân hàng ===== */
+var BANK={
+  stamp:'Lũy kế đến Q3/2026 · 27 ngân hàng',
+  lead:'Toàn ngành lũy kế 2026: lợi nhuận trước thuế 311 nghìn tỷ đồng (+21,4% so với cùng kỳ), ROE 17,4%, NIM 3,04%, NPL 2,11%. VCB, CTG, MBB chiếm khoảng 36% lợi nhuận trước thuế toàn ngành.',
+  note:'Nguồn: VN Bank Dashboard (FPTS), số liệu đến Q3/2026. Mọi khuyến nghị chỉ mang tính chất tham khảo.',
+  kpis:[
+    {l:'Lợi nhuận trước thuế',v:'311',u:'nghìn tỷ',d:'+21,4%',t:'good'},
+    {l:'Lợi nhuận sau thuế',v:'249',u:'nghìn tỷ',d:'+21,4%',t:'good'},
+    {l:'ROE',v:'17,4',u:'%',d:'-0,20 điểm %',t:'bad'},
+    {l:'NIM',v:'3,04',u:'%',d:'-0,10 điểm %',t:'bad'},
+    {l:'CIR',v:'29,4',u:'%',d:'-1,67 điểm %',t:'good'},
+    {l:'Tỷ lệ nợ xấu (NPL)',v:'2,11',u:'%',d:'+0,12 điểm %',t:'bad'},
+    {l:'P/E',v:'7,9',u:'x',d:'-21,6%',t:'neu'},
+    {l:'P/B',v:'1,3',u:'x',d:'-21,9%',t:'neu'}
+  ],
+  tops:[
+    {h:'Lợi nhuận trước thuế',dp:1,s:'nghìn tỷ đồng',r:[['VCB',40.4],['CTG',39.6],['MBB',30.5],['VPB',29.9],['BID',29.5]]},
+    {h:'Tổng tài sản',dp:1,s:'nghìn tỷ đồng',r:[['BID',3493.3],['CTG',2951.8],['VCB',2682.4],['MBB',1837.9],['VPB',1610.8]]},
+    {h:'ROE cao nhất',dp:1,s:'%',r:[['LPB',24.0],['ABB',22.7],['HDB',22.4],['CTG',21.7],['MBB',20.9]]},
+    {h:'NIM cao nhất',dp:2,s:'%',r:[['VPB',5.13],['MBB',4.07],['HDB',3.87],['TCB',3.68],['KLB',3.67]]},
+    {h:'CASA cao nhất',dp:1,s:'%',r:[['MBB',34.2],['VCB',33.1],['TCB',32.5],['CTG',23.4],['PGB',22.9]]},
+    {h:'Nợ xấu thấp nhất',dp:2,s:'%',r:[['VCB',0.71],['ACB',1.19],['BAB',1.19],['CTG',1.20],['TCB',1.27]]}
+  ]
+};
+(function(){
+  function vn(n,d){return n.toLocaleString('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d})}
+  document.getElementById('bk-stamp').textContent=BANK.stamp;
+  document.getElementById('bk-lead').textContent=BANK.lead;
+  document.getElementById('bk-note').textContent=BANK.note;
+  document.getElementById('bk-kpis').innerHTML=BANK.kpis.map(function(k){
+    var ar=k.d.charAt(0)==='+'?'▲ ':(k.d.charAt(0)==='-'?'▼ ':'');
+    return '<div class="kpi"><span class="l">'+k.l+'</span><span class="v">'+k.v+'<small>'+k.u+'</small></span><span class="d '+k.t+'">'+ar+k.d.replace(/^[+-]/,function(c){return c})+'<i>so với cùng kỳ</i></span></div>'}).join('');
+  document.getElementById('bk-tops').innerHTML=BANK.tops.map(function(t){
+    var mx=Math.max.apply(null,t.r.map(function(x){return x[1]}));
+    return '<div class="top-card"><h3>'+t.h+'<span>'+t.s+'</span></h3>'+t.r.map(function(x){
+      return '<div class="brow"><b>'+x[0]+'</b><span class="bar"><i style="width:'+(x[1]/mx*100).toFixed(1)+'%"></i></span><span class="n">'+vn(x[1],t.dp)+'</span></div>'}).join('')+'</div>'}).join('');
+})();
+/* Đánh số lại các mục đang hiển thị */
+(function(){
+  var n=0;[].forEach.call(document.querySelectorAll('main section, section'),function(sec){
+    var em=sec.querySelector('.sec-head h2 em');if(!em||sec.hidden)return;n++;em.textContent=(n<10?'0':'')+n+' /'});
 })();
 </script>
 
