@@ -1,0 +1,20 @@
+name: Probe nguồn dữ liệu
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Thử các nguồn
+        run: |
+          t() { echo "=== $1"; curl -sS -m 25 -A "Mozilla/5.0" -w "\nHTTP %{http_code}\n" "$2" | head -c 700; echo; }
+          NOW=$(date +%s); FROM=$((NOW-86400*400))
+          t tcbs-bars "https://apipubaws.tcbs.com.vn/stock-insight/v1/stock/bars-long-term?ticker=FPT&type=stock&resolution=D&to=$NOW&countBack=5"
+          t vnd-prices "https://api-finfo.vndirect.com.vn/v4/stock_prices?q=code:FPT&sort=date&size=3"
+          t vnd-ratios "https://api-finfo.vndirect.com.vn/v4/ratios/latest?order=reportDate&where=code:FPT~itemCode:51003,51016,51050&filter=itemCode,value"
+          t vnd-snap "https://finfo-api.vndirect.com.vn/v4/stock_prices?q=code:FPT~date:gte:2026-11-10&sort=date&size=3"
+          t tcbs-ratio "https://apipubaws.tcbs.com.vn/tcanalysis/v1/ticker/FPT/overview"
+          t tcbs-fin "https://apipubaws.tcbs.com.vn/tcanalysis/v1/finance/FPT/financialratio?yearly=0&isAll=false"
+          t fpts-chart "https://marketstream.fpts.com.vn/mdds/quote?Exchange=MDDS&TypeMsg=M1"
+          t tradingview-scan "https://scanner.tradingview.com/vietnam/scan"
