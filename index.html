@@ -484,7 +484,7 @@ footer b{color:var(--fg)}
             </div>
           </div>
         </div>
-        <div class="stk-foot">Nguồn: TradingView (chỉ số tài chính, dữ liệu trễ khoảng 15 phút) và VNDirect (lịch sử giá, đã điều chỉnh). Trung vị nhóm tính trên các mã cùng ngành niêm yết trên HOSE và HNX. Mọi thông tin chỉ mang tính chất tham khảo.</div>
+        <div class="stk-foot">Nguồn: TradingView (chỉ số tài chính) và VNDirect (lịch sử giá, đã điều chỉnh). Số liệu chốt cuối mỗi phiên, cập nhật hằng ngày sau 16:30. Trung vị nhóm tính trên các mã cùng ngành niêm yết trên HOSE và HNX. Mọi thông tin chỉ mang tính chất tham khảo.</div>
       </div>
     </section>
 
@@ -832,7 +832,7 @@ var BRIEFS=[
     [].forEach.call($('stk-chips').children,function(b){b.setAttribute('aria-pressed',b.textContent===code)});
     mets();
     (cache[code]?Promise.resolve(cache[code]):get(BASE+'hist/'+code+'.json').then(function(d){return cache[code]=d})).then(function(d){
-      if(cur!==code)return;hist=today(d,q);$('stk-nohist').hidden=true;draw()}).catch(function(){hist=[];$('stk-nohist').hidden=false;if(candle){candle.setData([]);vol.setData([])}});
+      if(cur!==code)return;hist=d;$('stk-nohist').hidden=true;draw()}).catch(function(){hist=[];$('stk-nohist').hidden=false;if(candle){candle.setData([]);vol.setData([])}});
   }
   function find(t){
     t=noAcc(t).trim();if(!t)return[];
@@ -861,15 +861,15 @@ var BRIEFS=[
   function load(){
     get(BASE+'quotes.json').then(function(d){
       Q=d.quotes;UPD=d.updated;var u=d.updated.split(' ');var dm=u[0].split('-');
-      $('stk-stamp').textContent='Cập nhật '+u[1].slice(0,5)+' ngày '+dm[2]+'/'+dm[1]+'/'+dm[0];
-      $('stk-live').textContent='● Dữ liệu trễ ~15 phút';
+      $('stk-stamp').textContent='Số liệu cuối phiên ngày '+dm[2]+'/'+dm[1]+'/'+dm[0];
+      $('stk-live').textContent='● Cập nhật mỗi ngày sau phiên';
       var ch=['FPT','VCB','HPG','MWG','SSI','FTS','SHS'].filter(function(c){return Q[c]});
       $('stk-chips').innerHTML=ch.map(function(c){return '<button type="button" class="chip" aria-pressed="false">'+c+'</button>'}).join('');
       if(!cur&&Q.FPT)show('FPT');
     }).catch(function(){$('stk-live').textContent='Chưa tải được dữ liệu';$('stk-msg').hidden=false;$('stk-msg').textContent='Chưa tải được dữ liệu cổ phiếu. Bạn thử tải lại trang sau ít phút.'});
   }
   window.addEventListener('resize',function(){if(chart)setTimeout(function(){chart.timeScale().fitContent()},80)});
-  load();setInterval(function(){if(!document.hidden)get(BASE+'quotes.json').then(function(d){Q=d.quotes;UPD=d.updated;if(cur){show(cur)}}).catch(function(){})},300000);
+  load();
 })();
 /* ===== Số liệu theo ngành: điền SECTORS để hiện mục này ===== */
 var SECTOR_DATE='',SECTOR_SRC='';

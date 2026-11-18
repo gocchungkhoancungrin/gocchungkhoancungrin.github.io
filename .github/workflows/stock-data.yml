@@ -2,8 +2,9 @@ name: Cập nhật dữ liệu cổ phiếu
 
 on:
   schedule:
-    - cron: '*/15 2-8 * * 1-5'
+    # Mỗi ngày sau phiên (16:35 giờ Việt Nam), thêm một lần dự phòng lúc 18:35
     - cron: '35 9 * * 1-5'
+    - cron: '35 11 * * 1-5'
   workflow_dispatch:
 
 permissions:
@@ -31,8 +32,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git fetch -q --depth 1 origin stocks && git checkout -q -f -B stocks FETCH_HEAD || true
-          # Lịch sử giá chỉ làm mới sau phiên (lịch 16:35) hoặc khi chạy tay
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ github.event.schedule }}" = "35 9 * * 1-5" ]; then export HIST=1; fi
+          export HIST=1
           python3 "$SCRIPT"
           git add -A
           MSG="Dữ liệu cổ phiếu $(date -u +%H:%M) UTC"
