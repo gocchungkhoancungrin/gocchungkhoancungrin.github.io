@@ -273,7 +273,8 @@ footer b{color:var(--fg)}
 .stk-search input{flex:1;min-width:0;font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
 .stk-search input:focus{outline:2px solid var(--accent);outline-offset:1px}
 .stk-search button{font:inherit;font-weight:700;color:#0a0e0c;background:var(--accent);border:0;border-radius:12px;padding:0 22px;cursor:pointer}
-.stk-sugg{margin-top:6px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stk-sw{position:relative}
+.stk-sugg{position:absolute;left:0;right:0;top:100%;margin-top:6px;z-index:30;box-shadow:0 14px 32px rgba(0,0,0,.5);background:var(--surface2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .stk-sugg button{all:unset;box-sizing:border-box;display:flex;gap:12px;width:100%;padding:10px 16px;cursor:pointer;font-size:14px;color:var(--muted)}
 .stk-sugg button:hover,.stk-sugg button:focus-visible{background:var(--accent-soft)}
 .stk-sugg b{font-family:var(--font-mono);color:var(--fg);min-width:44px}
@@ -658,11 +659,13 @@ footer b{color:var(--fg)}
       <div class="stk">
         <div class="stk-bar"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>Bảng tra cứu cổ phiếu</span><span class="live" id="stk-live">Đang tải…</span></div>
         <div class="stk-body">
+          <div class="stk-sw">
           <form class="stk-search" id="stk-form" autocomplete="off">
             <input id="stk-q" type="search" placeholder="Nhập mã hoặc tên công ty, VD: FPT" aria-label="Mã hoặc tên công ty" autocapitalize="characters">
             <button type="submit">Tra cứu</button>
           </form>
           <div class="stk-sugg" id="stk-sugg" hidden></div>
+          </div>
           <div class="chips" id="stk-chips" role="group" aria-label="Mã gợi ý"></div>
           <p class="stk-msg" id="stk-msg" hidden></p>
           <div id="stk-main" hidden>
@@ -1024,6 +1027,7 @@ var BRIEFS=[
     $('stk-main').hidden=true;$('stk-msg').hidden=false;
     $('stk-msg').textContent='Chưa có mã "'+$('stk-q').value.trim()+'" trong danh sách theo dõi. Bạn thử một trong các mã gợi ý bên dưới, hoặc liên hệ để mình bổ sung.';
   }
+  document.addEventListener('mousedown',function(e){if(!e.target.closest('.stk-sw'))$('stk-sugg').hidden=true});
   $('stk-form').addEventListener('submit',function(e){e.preventDefault();submit()});
   $('stk-q').addEventListener('input',function(){
     var r=find(this.value).slice(0,6),b=$('stk-sugg');
