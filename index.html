@@ -103,6 +103,10 @@ section{padding-block:44px;border-top:1px solid var(--line)}
 .sound .w{display:none}
 .sound[aria-pressed="true"] .w{display:inline}
 .sound[aria-pressed="true"] .x{display:none}
+.fbtn{position:absolute;top:12px;left:12px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(10,14,12,.72);color:var(--fg);font:600 14px var(--font-body);text-decoration:none;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.fbtn:hover{background:rgba(10,14,12,.9)}
+.fbtn svg{width:18px;height:18px;fill:currentColor}
+@media (max-width:420px){.fbtn span{display:none}.fbtn{padding:8px 10px}}
 .vtext b{color:var(--fg)}
 .links{display:flex;flex-direction:column;gap:10px;align-self:stretch;margin-top:4px}
 .lk{display:flex;align-items:center;gap:14px;padding:13px 16px;border:1px solid var(--line);border-radius:14px;background:var(--surface2);text-decoration:none;color:var(--fg)}
@@ -255,7 +259,11 @@ footer b{color:var(--fg)}
       <div class="sec-head"><h2><em>01 /</em>Video giới thiệu</h2></div>
       <div class="videocard">
         <div class="player">
-          <video id="intro" src="assets/video-gioi-thieu.mp4" poster="assets/poster.jpg" muted loop playsinline preload="metadata" controls controlslist="nodownload" aria-label="Video giới thiệu Trần Đức Rin"></video>
+          <video id="intro" src="assets/video-gioi-thieu.mp4" poster="assets/poster.jpg" muted playsinline preload="metadata" controls controlslist="nodownload" aria-label="Video giới thiệu Trần Đức Rin"></video>
+          <a class="fbtn" href="https://www.facebook.com/reel/1104317039144457" target="_blank" rel="noopener" aria-label="Xem video trên Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.5V7c0-.8.4-1.2 1.2-1.2H17V3h-2.6C11.8 3 10.5 4.5 10.5 6.8v1.7H8V12h2.5v9H14v-9h2.7l.4-3.5H14z"/></svg>
+            <span>Xem trên Facebook</span>
+          </a>
           <button class="sound" id="sound" type="button" aria-pressed="false">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="x" d="M16 9l5 6M21 9l-5 6"/><path class="w" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>
             <span id="sound-label">Bật tiếng</span>
@@ -463,6 +471,12 @@ footer b{color:var(--fg)}
     var v=document.getElementById('intro'),btn=document.getElementById('sound'),lab=document.getElementById('sound-label');
     if(!v||!btn)return;
     var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var START=17.5;
+    function toStart(){try{if(v.currentTime<START)v.currentTime=START}catch(e){}}
+    if(v.readyState>=1)toStart();
+    v.addEventListener('loadedmetadata',toStart);
+    v.addEventListener('play',toStart);
+    v.addEventListener('ended',function(){try{v.currentTime=START}catch(e){}var pr=v.play();if(pr&&pr.catch)pr.catch(function(){})});
     function setLabel(){var on=!v.muted;btn.setAttribute('aria-pressed',on?'true':'false');lab.textContent=on?'Tắt tiếng':'Bật tiếng'}
     btn.addEventListener('click',function(){
       v.muted=!v.muted;
