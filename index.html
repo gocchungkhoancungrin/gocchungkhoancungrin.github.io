@@ -472,6 +472,7 @@ footer b{color:var(--fg)}
             <div class="stk-grid">
               <div>
                 <div class="stk-sub"><h4>Đồ thị giá</h4><div class="rng" id="stk-rng" role="group" aria-label="Khoảng thời gian"><button type="button" data-n="63" aria-pressed="false">3T</button><button type="button" data-n="126" aria-pressed="false">6T</button><button type="button" data-n="9999" aria-pressed="true">1N</button></div></div>
+                <p class="stk-msg" id="stk-nohist" hidden>Chưa có dữ liệu lịch sử giá của mã này.</p>
                 <div id="stk-chart"></div>
               </div>
               <div>
@@ -483,7 +484,7 @@ footer b{color:var(--fg)}
             </div>
           </div>
         </div>
-        <div class="stk-foot">Nguồn: TradingView (chỉ số tài chính, dữ liệu trễ khoảng 15 phút) và VNDirect (lịch sử giá, đã điều chỉnh). Trung vị nhóm tính trên các mã trong danh sách theo dõi. Mọi thông tin chỉ mang tính chất tham khảo.</div>
+        <div class="stk-foot">Nguồn: TradingView (chỉ số tài chính, dữ liệu trễ khoảng 15 phút) và VNDirect (lịch sử giá, đã điều chỉnh). Trung vị nhóm tính trên các mã cùng ngành niêm yết trên HOSE và HNX. Mọi thông tin chỉ mang tính chất tham khảo.</div>
       </div>
     </section>
 
@@ -763,7 +764,7 @@ var BRIEFS=[
 /* ===== Tra cứu cổ phiếu (dữ liệu: TradingView + VNDirect, cập nhật bằng GitHub Actions) ===== */
 (function(){
   var BASE='https://raw.githubusercontent.com/gocchungkhoancungrin/gocchungkhoancungrin.github.io/stocks/';
-  var Q={},cur=null,chart=null,candle=null,vol=null,hist=[],range=9999,tab='val',cache={};
+  var Q={},UPD='',cur=null,chart=null,candle=null,vol=null,hist=[],range=9999,tab='val',cache={};
   var $=function(id){return document.getElementById(id)};
   function nz(x){return x===null||x===undefined||isNaN(x)}
   function f(n,d){return nz(n)?'–':n.toLocaleString('vi-VN',{minimumFractionDigits:d,maximumFractionDigits:d})}
@@ -772,8 +773,9 @@ var BRIEFS=[
   var SEC={'Technology Services':'dịch vụ công nghệ','Finance':'tài chính','Non-Energy Minerals':'khoáng sản','Retail Trade':'bán lẻ','Consumer Non-Durables':'hàng tiêu dùng','Utilities':'tiện ích','Energy Minerals':'năng lượng','Process Industries':'công nghiệp chế biến','Producer Manufacturing':'sản xuất công nghiệp','Consumer Durables':'hàng lâu bền'};
   function med(a){a=a.filter(function(x){return !nz(x)&&x>0}).sort(function(x,y){return x-y});if(a.length<3)return null;var m=a.length>>1;return a.length%2?a[m]:(a[m-1]+a[m])/2}
   function peerMed(code,key){
-    var q=Q[code],g=Object.keys(Q).filter(function(c){return Q[c].ind===q.ind});
-    if(g.length<4)g=Object.keys(Q).filter(function(c){return Q[c].sec===q.sec});
+    var q=Q[code],big=Object.keys(Q).filter(function(c){return Q[c].ex!=='UPCOM'}),
+      g=big.filter(function(c){return Q[c].ind===q.ind});
+    if(g.length<4)g=big.filter(function(c){return Q[c].sec===q.sec});
     return {m:med(g.map(function(c){return Q[c][key]})),n:g.length}
   }
   function chip(code,key,v,lowerBetter){
@@ -812,6 +814,12 @@ var BRIEFS=[
     vol.setData(h.map(function(x){return {time:x[0],value:x[5],color:x[4]>=x[1]?up+'66':dn+'66'}}));
     chart.timeScale().fitContent();
   }
+  function today(h,q){
+    if(!h.length||nz(q.o)||nz(q.h)||nz(q.l)||!UPD)return h;
+    var d=UPD.slice(0,10),m=(+UPD.slice(11,13))*60+(+UPD.slice(14,16)),wd=new Date(d+'T00:00:00').getDay();
+    if(h[h.length-1][0]>=d||wd===0||wd===6||m<555)return h;
+    return h.concat([[d,q.o,q.h,q.l,q.p,q.v||0]])
+  }
   function show(code){
     code=code.toUpperCase();if(!Q[code])return;
     cur=code;var q=Q[code];
@@ -824,7 +832,7 @@ var BRIEFS=[
     [].forEach.call($('stk-chips').children,function(b){b.setAttribute('aria-pressed',b.textContent===code)});
     mets();
     (cache[code]?Promise.resolve(cache[code]):get(BASE+'hist/'+code+'.json').then(function(d){return cache[code]=d})).then(function(d){
-      if(cur!==code)return;hist=d;draw()}).catch(function(){hist=[];if(candle){candle.setData([]);vol.setData([])}});
+      if(cur!==code)return;hist=today(d,q);$('stk-nohist').hidden=true;draw()}).catch(function(){hist=[];$('stk-nohist').hidden=false;if(candle){candle.setData([]);vol.setData([])}});
   }
   function find(t){
     t=noAcc(t).trim();if(!t)return[];
@@ -852,7 +860,7 @@ var BRIEFS=[
     [].forEach.call($('stk-tabs').children,function(x){x.setAttribute('aria-selected',x===b)});mets()});
   function load(){
     get(BASE+'quotes.json').then(function(d){
-      Q=d.quotes;var u=d.updated.split(' ');var dm=u[0].split('-');
+      Q=d.quotes;UPD=d.updated;var u=d.updated.split(' ');var dm=u[0].split('-');
       $('stk-stamp').textContent='Cập nhật '+u[1].slice(0,5)+' ngày '+dm[2]+'/'+dm[1]+'/'+dm[0];
       $('stk-live').textContent='● Dữ liệu trễ ~15 phút';
       var ch=['FPT','VCB','HPG','MWG','SSI','FTS','SHS'].filter(function(c){return Q[c]});
@@ -861,7 +869,7 @@ var BRIEFS=[
     }).catch(function(){$('stk-live').textContent='Chưa tải được dữ liệu';$('stk-msg').hidden=false;$('stk-msg').textContent='Chưa tải được dữ liệu cổ phiếu. Bạn thử tải lại trang sau ít phút.'});
   }
   window.addEventListener('resize',function(){if(chart)setTimeout(function(){chart.timeScale().fitContent()},80)});
-  load();setInterval(function(){if(!document.hidden)get(BASE+'quotes.json').then(function(d){Q=d.quotes;if(cur){show(cur)}}).catch(function(){})},300000);
+  load();setInterval(function(){if(!document.hidden)get(BASE+'quotes.json').then(function(d){Q=d.quotes;UPD=d.updated;if(cur){show(cur)}}).catch(function(){})},300000);
 })();
 /* ===== Số liệu theo ngành: điền SECTORS để hiện mục này ===== */
 var SECTOR_DATE='',SECTOR_SRC='';
