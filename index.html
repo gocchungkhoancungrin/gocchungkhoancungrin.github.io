@@ -251,6 +251,13 @@ footer b{color:var(--fg)}
 .brow .bar i{display:block;height:10px;border-radius:5px;background:linear-gradient(90deg,#4aa56b,var(--accent))}
 .brow .n{text-align:right;font-family:var(--font-mono);font-variant-numeric:tabular-nums}
 @media (max-width:900px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.tops{grid-template-columns:1fr}}
+
+.pager{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+.pager .pg-l{font-size:13px;color:var(--muted);margin-right:4px}
+.pager button{font:inherit;font-family:var(--font-mono);font-size:14px;font-weight:600;min-width:40px;height:40px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer}
+.pager button:hover{border-color:var(--accent);color:var(--fg)}
+.pager button[aria-current="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.pager button:disabled{opacity:.4;cursor:default}
 @media (max-width:820px){
   .hero-grid{grid-template-columns:1fr;gap:0;min-height:0;padding-top:12px}
   .hero-text{padding-block:24px 8px}
@@ -371,16 +378,8 @@ footer b{color:var(--fg)}
         <h2><em>03 /</em>Nhận định thị trường</h2>
         <span class="stamp">Cập nhật sau mỗi phiên giao dịch</span>
       </div>
-      <article class="brief">
-        <div class="brief-top"><span class="brief-date">17/11/2026</span><span class="brief-by">Trần Đức Rin · Chuyên viên tư vấn đầu tư FPTS</span></div>
-        <h3>VN-Index lùi 0,6% về 1.726,7 điểm, nhóm dầu khí giảm mạnh nhất</h3>
-        <div class="brief-pts">
-          <div><h4>Diễn biến phiên</h4><p>VN-Index giảm <b>10,2 điểm (-0,6%)</b>, đóng cửa ở <b>1.726,7 điểm</b>. Số mã giảm nhiều hơn số mã tăng, thanh khoản tăng so với phiên trước, đạt khoảng <b>15 nghìn tỷ đồng</b>.</p></div>
-          <div><h4>Nhóm ngành đáng chú ý</h4><p><b>Dầu khí</b> giảm mạnh nhất (-4,2%) với BSR, PLX, PVD. <b>Ngân hàng</b> giảm nhẹ: VCB, BID cùng giảm 2,1%, CTG giảm 0,8%, TCB giảm 0,7%.</p></div>
-          <div><h4>Cần theo dõi</h4><p>Thanh khoản trong các phiên tới và phản ứng của nhóm ngân hàng, vì đây là nhóm có tác động lớn đến chỉ số.</p></div>
-        </div>
-        <p class="brief-note">Nhận định chỉ mang tính chất tham khảo, không phải lời mời mua hoặc bán.</p>
-      </article>
+      <article class="brief" id="brief" aria-live="polite"></article>
+      <nav class="pager" id="pager" aria-label="Các bản tin theo ngày"></nav>
     </section>
 
     <section id="ngan-hang">
@@ -632,6 +631,39 @@ footer b{color:var(--fg)}
   });
 })();
 
+
+/* ===== Nhận định thị trường: lưu trữ tối đa 10 phiên gần nhất =====
+   Thêm bản tin mới vào ĐẦU danh sách BRIEFS (mới nhất trước). */
+var BRIEFS=[
+  {date:'17/11/2026',
+   title:'VN-Index lùi 0,6% về 1.726,7 điểm, nhóm dầu khí giảm mạnh nhất',
+   pts:[
+    ['Diễn biến phiên','VN-Index giảm <b>10,2 điểm (-0,6%)</b>, đóng cửa ở <b>1.726,7 điểm</b>. Số mã giảm nhiều hơn số mã tăng, thanh khoản tăng so với phiên trước, đạt khoảng <b>15 nghìn tỷ đồng</b>.'],
+    ['Nhóm ngành đáng chú ý','<b>Dầu khí</b> giảm mạnh nhất (-4,2%) với BSR, PLX, PVD. <b>Ngân hàng</b> giảm nhẹ: VCB, BID cùng giảm 2,1%, CTG giảm 0,8%, TCB giảm 0,7%.'],
+    ['Cần theo dõi','Thanh khoản trong các phiên tới và phản ứng của nhóm ngân hàng, vì đây là nhóm có tác động lớn đến chỉ số.']
+   ]}
+];
+(function(){
+  var list=BRIEFS.slice(0,10),cur=0,box=document.getElementById('brief'),pg=document.getElementById('pager');
+  function show(i){
+    cur=i;var b=list[i];
+    box.innerHTML='<div class="brief-top"><span class="brief-date">'+b.date+'</span><span class="brief-by">Trần Đức Rin · Chuyên viên tư vấn đầu tư FPTS</span></div>'+
+      '<h3>'+b.title+'</h3><div class="brief-pts">'+b.pts.map(function(x){return '<div><h4>'+x[0]+'</h4><p>'+x[1]+'</p></div>'}).join('')+'</div>'+
+      '<p class="brief-note">Nhận định chỉ mang tính chất tham khảo, không phải lời mời mua hoặc bán.</p>';
+    drawPager();
+  }
+  function drawPager(){
+    var h='<span class="pg-l">Phiên gần nhất</span><button type="button" data-i="prev" aria-label="Bản tin mới hơn"'+(cur===0?' disabled':'')+'>‹</button>';
+    list.forEach(function(b,i){h+='<button type="button" data-i="'+i+'" title="'+b.date+'" aria-label="Bản tin ngày '+b.date+'"'+(i===cur?' aria-current="true"':'')+'>'+(i+1)+'</button>'});
+    h+='<button type="button" data-i="next" aria-label="Bản tin cũ hơn"'+(cur===list.length-1?' disabled':'')+'>›</button>';
+    pg.innerHTML=h;
+  }
+  pg.addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b||b.disabled)return;var v=b.getAttribute('data-i');
+    show(v==='prev'?cur-1:(v==='next'?cur+1:+v));
+  });
+  if(list.length)show(0);
+})();
 /* ===== Số liệu theo ngành: điền SECTORS để hiện mục này ===== */
 var SECTOR_DATE='',SECTOR_SRC='';
 var SECTORS=[];
