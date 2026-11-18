@@ -1,0 +1,30 @@
+name: probe
+on: workflow_dispatch
+permissions:
+  contents: read
+jobs:
+  p:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          python3 - <<'PY'
+          import json,urllib.request,time
+          def get(u,data=None,h=None):
+              r=urllib.request.Request(u,data=data,headers=h or {'User-Agent':'Mozilla/5.0'})
+              return urllib.request.urlopen(r,timeout=25).read()
+          for t in ('M1','S1','M2','Q1'):
+              try:
+                  b=get('https://marketstream.fpts.com.vn/mdds/quote?Exchange=MDDS&TypeMsg='+t)
+                  d=json.loads(b);L=d.get('Data',[])
+                  print(t,len(b),'bytes',len(L),'items',[x.get('Itc') for x in L[:12]]);print(json.dumps(L[:1],ensure_ascii=False)[:500])
+              except Exception as e: print(t,'ERR',e)
+          for u in ('https://marketstream.fpts.com.vn/mdds/quote?Exchange=HOSE&TypeMsg=M1','https://marketstream.fpts.com.vn/mdds/quote?Exchange=STO&TypeMsg=M1'):
+              try:
+                  b=get(u);print(u[-30:],len(b),b[:300])
+              except Exception as e: print(u[-30:],'ERR',e)
+          body=json.dumps({"filter":[{"left":"name","operation":"in_range","right":["FPT","VCB"]}],"markets":["vietnam"],"columns":["name","close","change","volume","update_mode","last_bar_update_time","time"],"range":[0,5]}).encode()
+          try:
+              print(get('https://scanner.tradingview.com/vietnam/scan',body,{'Content-Type':'application/json','User-Agent':'Mozilla/5.0'}).decode()[:600])
+          except Exception as e: print('TV ERR',e)
+          print(time.strftime('%H:%M:%S UTC',time.gmtime()))
+          PY
