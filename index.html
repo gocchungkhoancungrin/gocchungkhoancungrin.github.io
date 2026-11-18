@@ -154,6 +154,9 @@ section{padding-block:44px;border-top:1px solid var(--line)}
   .status.live .dot{animation:pulse 1.8s infinite}
   @keyframes pulse{70%{box-shadow:0 0 0 8px rgba(61,220,151,0)}100%{box-shadow:0 0 0 0 rgba(61,220,151,0)}}
 }
+.tvbox{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 12px;min-height:130px}
+.tradingview-widget-copyright{font-size:12px;color:var(--muted);text-align:right;padding:6px 6px 0}
+.tradingview-widget-copyright a{color:var(--muted)}
 .meta{display:flex;flex-direction:column;gap:4px;margin-top:10px;padding-top:12px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
 .meta b{color:var(--fg);font-weight:600}
 .meta em{font-style:normal;font-weight:700;font-family:var(--font-mono)}
@@ -296,9 +299,27 @@ footer b{color:var(--fg)}
     <section id="thi-truong">
       <div class="sec-head">
         <h2><em>02 /</em>Thị trường hôm nay</h2>
-        <span class="status" id="mstatus" role="status" aria-live="polite"><i class="dot" aria-hidden="true"></i><span id="mstatus-t">Đang cập nhật số liệu</span></span>
+        <span class="stamp">Dữ liệu từ TradingView, có thể chậm vài phút</span>
       </div>
-      <div class="tiles" id="tiles"></div>
+      <div class="tvbox">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-tickers.js" async>
+          {
+            "symbols": [
+              {"proName": "HOSE:VNINDEX", "title": "VN-Index"},
+              {"proName": "HOSE:VN30", "title": "VN30"},
+              {"proName": "HNX:HNXINDEX", "title": "HNX-Index"}
+            ],
+            "colorTheme": "dark",
+            "locale": "vi_VN",
+            "isTransparent": true,
+            "showSymbolLogo": false
+          }
+          </script>
+          <div class="tradingview-widget-copyright"><a href="https://vn.tradingview.com/" rel="noopener nofollow" target="_blank">Theo dõi mọi thị trường trên TradingView</a></div>
+        </div>
+      </div>
     </section>
 
     <section id="khuyen-nghi">
@@ -374,80 +395,7 @@ footer b{color:var(--fg)}
   }
   svg.innerHTML=out+'<path class="ln" d="'+line+'"/>';
 
-  /* Số liệu thị trường: realtime từ FPTS marketstream, có số chốt phiên dự phòng */
-  var MKT_URL='https://marketstream.fpts.com.vn/mdds/quote?Exchange=MDDS&TypeMsg=M1';
-  var MKT=[{code:'001_STO',name:'VN-Index'},{code:'101_STO',name:'VN30'},{code:'002_STX',name:'HNX-Index'}];
-  var FALLBACK={date:'17/11/2026',rows:{
-    '001_STO':{val:1726.72,pt:-10.17,pc:-0.59,tv:9596,up:110,flat:62,dec:207},
-    '101_STO':{val:1837.13,pt:-7.12,pc:-0.39,tv:5351,up:8,flat:3,dec:19},
-    '002_STX':{val:248.60,pt:-6.31,pc:-2.48,tv:576,up:41,flat:57,dec:73}}};
-  var hasLive=false;
-  function fmt(n){return n.toLocaleString('vi-VN',{minimumFractionDigits:2,maximumFractionDigits:2})}
-  function fmtInt(n){return Math.round(n).toLocaleString('vi-VN')}
-  function sgn(n){return (n>0?'+':'')+fmt(n)}
-  function pad(n){return (n<10?'0':'')+n}
-  function renderTiles(rows){
-    document.getElementById('tiles').innerHTML=MKT.map(function(m){
-      var x=rows[m.code]; if(!x)return '';
-      var dir=x.pt>0?'up':(x.pt<0?'down':'flat'), ar=x.pt>0?'▲ ':(x.pt<0?'▼ ':'– ');
-      return '<div class="tile"><span class="label">'+m.name+'</span><span class="val num">'+fmt(x.val)+'</span>'+
-        '<span class="chgpill '+dir+'">'+ar+sgn(x.pt)+' ('+sgn(x.pc)+'%)</span>'+
-        '<div class="meta"><span>Giá trị giao dịch <b class="num">'+fmtInt(x.tv)+' tỷ đồng</b></span>'+
-        '<span class="brd" aria-label="'+x.up+' mã tăng, '+x.flat+' mã đứng giá, '+x.dec+' mã giảm">'+
-        '<span class="up"><i class="tri u" aria-hidden="true"></i>'+x.up+'</span>'+
-        '<span class="ref"><i class="dash" aria-hidden="true"></i>'+x.flat+'</span>'+
-        '<span class="down"><i class="tri d" aria-hidden="true"></i>'+x.dec+'</span></span></div></div>';
-    }).join('');
-  }
-  function setStatus(kind,html){
-    var box=document.getElementById('mstatus'),t=document.getElementById('mstatus-t');
-    if(!box||!t)return;
-    box.className='status'+(kind==='live'?' live':''); t.innerHTML=html;
-  }
-  /* Lấy giờ Việt Nam (UTC+7) không phụ thuộc múi giờ máy người xem */
-  function vnNow(now){var d=new Date((now===undefined?Date.now():now)+7*3600*1000);return {wd:d.getUTCDay(),min:d.getUTCHours()*60+d.getUTCMinutes()}}
-  function parseTime(str){
-    var m=/^(\d{4})(\d{2})(\d{2}) (\d{2}):(\d{2}):(\d{2})/.exec(str||''); if(!m)return null;
-    return {ms:Date.UTC(+m[1],+m[2]-1,+m[3],+m[4]-7,+m[5],+m[6]),date:m[3]+'/'+m[2]+'/'+m[1],clock:m[4]+':'+m[5]+':'+m[6]};
-  }
-  function applyLive(json){
-    var map={}; (json&&json.Data||[]).forEach(function(d){map[d.Itc]=d});
-    var rows={}, last=null, ok=true;
-    MKT.forEach(function(m){
-      var d=map[m.code];
-      if(!d||typeof d.Index!=='number'){ok=false;return}
-      rows[m.code]={val:d.Index,pt:d.PointC||0,pc:d.PecentC||0,tv:(d.Tv||0)/1e9,up:d.Cup||0,flat:d.Cno||0,dec:d.Cdo||0};
-      var t=parseTime(d.Time); if(t&&(!last||t.ms>last.ms))last=t;
-    });
-    if(!ok||!last)throw new Error('no data');
-    renderTiles(rows); hasLive=true;
-    var n=vnNow(), age=Date.now()-last.ms;
-    var inHours=n.wd>=1&&n.wd<=5&&n.min>=540&&n.min<=900;
-    var lunch=n.wd>=1&&n.wd<=5&&n.min>=690&&n.min<780;
-    if(inHours&&age<300000) setStatus('live','<b>Realtime (đang giao dịch)</b> · cập nhật '+last.clock);
-    else if(lunch&&age<4*3600*1000) setStatus('idle','Nghỉ giữa phiên · cập nhật lúc '+last.clock);
-    else setStatus('idle','Chốt phiên '+last.date);
-    return inHours&&age<300000;
-  }
-  function useFallback(){
-    if(hasLive)return;
-    renderTiles(FALLBACK.rows); setStatus('idle','Chốt phiên '+FALLBACK.date);
-  }
-  function loadMarket(){
-    var ctl=('AbortController' in window)?new AbortController():null;
-    var timer=setTimeout(function(){if(ctl)ctl.abort()},8000);
-    return fetch(MKT_URL,{cache:'no-store',signal:ctl?ctl.signal:undefined})
-      .then(function(r){if(!r.ok)throw new Error('http');return r.json()})
-      .then(function(j){clearTimeout(timer);return applyLive(j)})
-      .catch(function(){clearTimeout(timer);useFallback();return false});
-  }
-  function loop(){
-    loadMarket().then(function(live){
-      setTimeout(function(){ if(document.hidden){document.addEventListener('visibilitychange',function f(){document.removeEventListener('visibilitychange',f);loop()})}else{loop()} }, live?5000:60000);
-    });
-  }
-  renderTiles(FALLBACK.rows);
-  loop();
+
 
   var picks=[
     {t:'ABC',co:'Công ty mẫu A',rec:'buy',recText:'MUA',buy:'24,5 – 25,5',target:29.0,stop:'23,0',entry:25.0,note:'Lợi nhuận quý tăng, dòng tiền tích cực.'},
