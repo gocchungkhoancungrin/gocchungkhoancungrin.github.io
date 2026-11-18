@@ -384,11 +384,11 @@ footer b{color:var(--fg)}
 .mdl-foot a{color:var(--accent);font-weight:600;text-decoration:none;margin-left:8px}
 
 .oil-h{font-size:16px;font-weight:700;margin:24px 0 10px}
-#oil-tbl{min-width:640px}
-#oil-tbl th,#oil-tbl td{text-align:right;white-space:nowrap}
-#oil-tbl th:first-child,#oil-tbl td:first-child{text-align:left}
-#oil-tbl td{font-family:var(--font-mono)}#oil-tbl td:first-child{font-family:var(--font-mono);font-weight:800}
-#oil-tbl td.up{color:var(--up)}#oil-tbl td.down{color:var(--down)}
+#oil-tbl,#re-tbl{min-width:640px}
+#oil-tbl th,#oil-tbl td,#re-tbl th,#re-tbl td{text-align:right;white-space:nowrap}
+#oil-tbl th:first-child,#oil-tbl td:first-child,#re-tbl th:first-child,#re-tbl td:first-child{text-align:left}
+#oil-tbl td,#re-tbl td{font-family:var(--font-mono)}#oil-tbl td:first-child,#re-tbl td:first-child{font-weight:800}
+#oil-tbl td.up,#re-tbl td.up{color:var(--up)}#oil-tbl td.down,#re-tbl td.down{color:var(--down)}
 .tc-list{list-style:none;margin:0;padding:0;display:grid;gap:11px}
 .tc-list li{font-size:13.5px;line-height:1.55;color:var(--muted)}
 .tc-list b{display:block;color:var(--fg);font-size:14px;margin-bottom:1px}
@@ -579,6 +579,7 @@ footer b{color:var(--fg)}
       <div class="chips" id="sec-tabs" role="tablist" aria-label="Chọn ngành">
         <button type="button" class="chip" role="tab" data-p="bank" aria-pressed="true">Ngân hàng</button>
         <button type="button" class="chip" role="tab" data-p="oil" aria-pressed="false">Dầu khí</button>
+        <button type="button" class="chip" role="tab" data-p="re" aria-pressed="false">Bất động sản</button>
       </div>
       <div id="p-bank">
         <p class="bk-lead" id="bk-lead"></p>
@@ -593,6 +594,14 @@ footer b{color:var(--fg)}
         <h4 class="oil-h">Các mã dầu khí chính (dự phóng của SSI Research)</h4>
         <div class="tablebox"><table id="oil-tbl"><thead></thead><tbody></tbody></table></div>
         <p class="brief-note" id="oil-note"></p>
+      </div>
+          <div id="p-re" hidden>
+        <p class="bk-lead" id="re-lead"></p>
+        <div class="kpis" id="re-kpis"></div>
+        <div class="tops" id="re-cards"></div>
+        <h4 class="oil-h">Kết quả 9 tháng đầu năm 2026 và định giá các chủ đầu tư nhà ở (dự phóng của Vietcap)</h4>
+        <div class="tablebox"><table id="re-tbl"><thead></thead><tbody></tbody></table></div>
+        <p class="brief-note" id="re-note"></p>
       </div>
     </section>
 
@@ -1214,12 +1223,68 @@ var OIL={
   t.tHead.innerHTML='<tr>'+OIL.head.map(function(h){return '<th>'+esc(h)+'</th>'}).join('')+'</tr>';
   t.tBodies[0].innerHTML=OIL.rows.map(function(r){return '<tr>'+r.map(function(c,i){
     var cl=(i===1||i===2)&&/^[+-]/.test(c)?(c.charAt(0)==='+'?' class="up"':' class="down"'):'';return '<td'+cl+'>'+esc(c)+'</td>'}).join('')+'</tr>'}).join('')}());
+/* ===== Ngành bất động sản (nguồn: Vietcap 09/10 và 04/11/2026) ===== */
+var RE={
+  stamp:'Báo cáo Vietcap ngày 09/10 và 04/11/2026',
+  lead:'Giao dịch sơ cấp 9 tháng đầu năm 2026 tại Hà Nội và TP.HCM giảm khoảng 30% so với cùng kỳ do lãi suất cao. Vietcap kỳ vọng quý 4 cải thiện và năm 2027 phục hồi có chọn lọc, tập trung vào các dự án tốt thay vì lan rộng. Ba luật bất động sản sửa đổi dự kiến có hiệu lực từ 1/3/2027.',
+  note:'Nguồn: Vietcap, Cập nhật ngành Bất động sản (09/10/2026) và BĐS Nhà ở (04/11/2026). Dự phóng là ước tính của Vietcap, P/E và P/B tính theo giá ngày 04/11/2026. Mọi khuyến nghị chỉ mang tính chất tham khảo.',
+  kpis:[
+    {l:'Giao dịch sơ cấp 9T2026 (Hà Nội, TP.HCM)',v:'-30',u:'%',d:'-30%',t:'bad',c:'so với cùng kỳ, theo ước tính từ số liệu CBRE'},
+    {l:'Doanh số bán bất động sản 9T2026 của VHM',v:'219',u:'nghìn tỷ',d:'+35%',t:'good'},
+    {l:'Lợi nhuận sau thuế 9T2026 của VHM',v:'71,4',u:'nghìn tỷ',c:'gấp 5,0 lần cùng kỳ, nhờ bán lô lớn'},
+    {l:'Giá trị hợp đồng chưa ghi nhận của VHM',v:'185,6',u:'nghìn tỷ',d:'-17%',t:'bad',c:'so với cùng kỳ, cuối quý 3/2026'},
+    {l:'Đợt mở bán Gladia Heights của KDH',v:'~500',u:'căn',c:'khoảng 90% bán hết trong ngày đầu, ~4 nghìn tỷ đồng'},
+    {l:'Thuế đề xuất với đất bỏ hoang, chậm sử dụng',v:'0,2',u:'%',c:'dự thảo sửa Luật thuế sử dụng đất phi nông nghiệp'},
+    {l:'Kỳ họp Quốc hội xem xét 3 luật',v:'17/10–20/11',u:'',c:'Luật Đất đai, Nhà ở, Kinh doanh bất động sản'},
+    {l:'Hiệu lực dự kiến của các luật sửa đổi',v:'1/3/2027',u:'',c:'dự thảo vẫn có thể điều chỉnh'}
+  ],
+  cards:[
+    {h:'Điểm chính của dự thảo luật',r:[
+      ['Luật Đất đai','Chuẩn hóa bảng giá đất và hệ số điều chỉnh khi tính tiền bồi thường, tiền sử dụng đất, tiền thuê đất. Thu bổ sung tăng dần với dự án chậm đưa đất vào sử dụng.'],
+      ['Luật Nhà ở','Thêm khung pháp lý cho nhà ở cho thuê, bất động sản lưu trú như condotel và officetel. Cho phép PPP/BT trong cải tạo chung cư cũ.'],
+      ['Luật Kinh doanh bất động sản','Tăng cường hệ thống thông tin thị trường và tính minh bạch.']]},
+    {h:'Yếu tố hỗ trợ triển vọng 2027',r:[
+      ['Nhu cầu ở thực','Vững chắc với các dự án có vị trí tốt.'],
+      ['Ưu đãi bán hàng','Chủ đầu tư tăng ưu đãi để hỗ trợ khả năng hấp thụ.'],
+      ['Lãi suất','Mặt bằng lãi suất dự kiến ổn định hơn trong năm 2027.'],
+      ['Hạ tầng và pháp lý','Hạ tầng tiếp tục phát triển, khung pháp lý hoàn thiện giúp thuận lợi phê duyệt dự án.']]},
+    {h:'Rủi ro cần theo dõi',r:[
+      ['Niềm tin người mua','Có thể phục hồi chậm hơn dự kiến nếu lãi suất duy trì cao.'],
+      ['Chi phí vốn','Lãi suất cao hơn dự kiến làm tăng chi phí vốn của chủ đầu tư.'],
+      ['Phân hóa mạnh','Tăng trưởng 2027 tập trung ở dự án mới mở bán; dự án đã có nền cao của 2026 tăng chậm hơn.'],
+      ['Dự thảo chưa chốt','Tác động còn phụ thuộc văn bản hướng dẫn và mức độ tuân thủ.']]}
+  ],
+  head:['Mã','LNST 9T2026 (tỷ đồng)','So với cùng kỳ','Đạt % dự báo năm','P/E 2026F','P/E 2027F','P/B 2026F','ROE 2026F'],
+  rows:[
+    ['VHM','71.381','gấp 5,0 lần','119%','8,7x','8,6x','1,9x','23%'],
+    ['KDH','1.209','+117%','79%','11,8x','13,2x','0,9x','8%'],
+    ['NVL','2.989','–','171%','19,1x','15,7x','0,6x','3%'],
+    ['NLG','128','-64%','18%','15,9x','12,4x','0,8x','5%'],
+    ['DXG','106','-52%','49%','62,4x','7,5x','0,9x','2%'],
+    ['HDC','163','-73%','52%','9,3x','15,1x','0,9x','10%']
+  ]
+};
+(function(){
+  function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  document.getElementById('re-lead').textContent=RE.lead;
+  document.getElementById('re-note').textContent=RE.note;
+  document.getElementById('re-kpis').innerHTML=RE.kpis.map(function(k){
+    var d='';
+    if(k.d){var ar=k.d.charAt(0)==='+'?'▲ ':(k.d.charAt(0)==='-'?'▼ ':'');d='<span class="d '+k.t+'">'+ar+esc(k.d)+'<i>'+esc(k.c||'so với cùng kỳ')+'</i></span>'}
+    else d='<span class="d neu cap">'+esc(k.c||'')+'</span>';
+    return '<div class="kpi"><span class="l">'+esc(k.l)+'</span><span class="v">'+esc(k.v)+(k.u?'<small>'+esc(k.u)+'</small>':'')+'</span>'+d+'</div>'}).join('');
+  document.getElementById('re-cards').innerHTML=RE.cards.map(function(c){
+    return '<div class="top-card"><h3>'+esc(c.h)+'</h3><ul class="tc-list">'+c.r.map(function(x){return '<li><b>'+esc(x[0])+'</b>'+esc(x[1])+'</li>'}).join('')+'</ul></div>'}).join('');
+  var t=document.getElementById('re-tbl');
+  t.tHead.innerHTML='<tr>'+RE.head.map(function(h){return '<th>'+esc(h)+'</th>'}).join('')+'</tr>';
+  t.tBodies[0].innerHTML=RE.rows.map(function(r){return '<tr>'+r.map(function(c,i){
+    var cl=i===2&&/^[+-]/.test(c)?(c.charAt(0)==='+'?' class="up"':' class="down"'):'';return '<td'+cl+'>'+esc(c)+'</td>'}).join('')+'</tr>'}).join('')}());
 (function(){
   var tabs=document.getElementById('sec-tabs'),stamp=document.getElementById('bk-stamp');
-  var S={bank:function(){return BANK.stamp},oil:function(){return OIL.stamp}};
+  var S={bank:function(){return BANK.stamp},oil:function(){return OIL.stamp},re:function(){return RE.stamp}};
   function pick(id){
     [].forEach.call(tabs.children,function(b){b.setAttribute('aria-pressed',b.getAttribute('data-p')===id)});
-    document.getElementById('p-bank').hidden=id!=='bank';document.getElementById('p-oil').hidden=id!=='oil';
+    ['bank','oil','re'].forEach(function(k){document.getElementById('p-'+k).hidden=id!==k});
     stamp.textContent=S[id]();
   }
   tabs.addEventListener('click',function(e){var b=e.target.closest('button');if(b)pick(b.getAttribute('data-p'))});
@@ -1231,12 +1296,13 @@ var OIL={
 var SECTOR_MENU=[
   {n:'Ngân hàng',d:'Lợi nhuận, ROE, NIM, nợ xấu, top 5 theo chỉ tiêu',h:'#ngan-hang',tab:'bank'},
   {n:'Dầu khí',d:'Giá dầu, cước tàu, dự án, các mã chính',h:'#ngan-hang',tab:'oil'},
-  {n:'Bất động sản'},{n:'Chứng khoán'},{n:'Thép'},{n:'Bán lẻ'},{n:'Công nghệ'}
+  {n:'Bất động sản',d:'Luật mới, giao dịch sơ cấp, kết quả và định giá chủ đầu tư',h:'#ngan-hang',tab:'re'},
+  {n:'Chứng khoán'},{n:'Thép'},{n:'Bán lẻ'},{n:'Công nghệ'}
 ];
 (function(){
   var dd=document.getElementById('dd'),btn=document.getElementById('dd-btn'),pn=document.getElementById('dd-panel');
   var list=SECTOR_MENU.slice();
-  if(!document.getElementById('nganh').hidden)list.splice(2,0,{n:'So sánh các ngành',d:'P/E, P/B, ROE, nhận định từng ngành',h:'#nganh'});
+  if(!document.getElementById('nganh').hidden)list.splice(3,0,{n:'So sánh các ngành',d:'P/E, P/B, ROE, nhận định từng ngành',h:'#nganh'});
   pn.innerHTML='<div class="dd-in"><h5>Danh mục ngành</h5><div class="dd-grid">'+list.map(function(x){
     return x.h?'<a href="'+x.h+'"'+(x.tab?' data-tab="'+x.tab+'"':'')+'><b>'+x.n+'</b><small>'+x.d+'</small></a>':'<span class="soon"><b>'+x.n+'</b><small>Sắp cập nhật</small></span>'}).join('')+'</div></div>';
   function set(o){dd.classList.toggle('open',o);btn.setAttribute('aria-expanded',o)}
