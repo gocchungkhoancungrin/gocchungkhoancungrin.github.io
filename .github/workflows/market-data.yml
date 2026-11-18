@@ -3,7 +3,12 @@ name: Cập nhật số liệu thị trường
 on:
   schedule:
     # Cứ 15 phút khởi động một lần trong giờ giao dịch (09:00 đến 15:55 giờ Việt Nam), thứ Hai đến thứ Sáu
-    - cron: '*/15 2-8 * * 1-5'
+    - cron: '*/15 2-6 * * 1-5'
+    - cron: '0,15,30 7 * * 1-5'
+    # Các đợt bổ sung quanh giờ đóng cửa để chốt số liệu: 14:46, 14:59 và 15:05 giờ Việt Nam
+    - cron: '46 7 * * 1-5'
+    - cron: '59 7 * * 1-5'
+    - cron: '5 8 * * 1-5'
   workflow_dispatch:
 
 permissions:
@@ -56,8 +61,8 @@ jobs:
             fi
             NOW=$(date +%s)
             HHMM=$(date -u +%H%M)
-            # Dừng sau 14 phút, hoặc khi hết giờ giao dịch (sau 15:05 giờ Việt Nam)
-            if [ $((NOW-START)) -ge 840 ] || [ "$HHMM" -ge 0805 ] || [ "$HHMM" -lt 0155 ]; then
+            # Dừng sau 14 phút, hoặc khi hết giờ giao dịch (sau 15:12 giờ Việt Nam)
+            if [ $((NOW-START)) -ge 840 ] || [ "$HHMM" -ge 0812 ] || [ "$HHMM" -lt 0155 ]; then
               break
             fi
             sleep 60
