@@ -16,7 +16,7 @@ concurrency:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - name: Lấy dữ liệu và ghi vào nhánh stocks
@@ -31,6 +31,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git fetch -q --depth 1 origin stocks && git checkout -q -f -B stocks FETCH_HEAD || true
+          # Lịch sử giá chỉ làm mới sau phiên (lịch 16:35) hoặc khi chạy tay
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ github.event.schedule }}" = "35 9 * * 1-5" ]; then export HIST=1; fi
           python3 "$SCRIPT"
           git add -A
           MSG="Dữ liệu cổ phiếu $(date -u +%H:%M) UTC"
