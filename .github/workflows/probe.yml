@@ -6,15 +6,11 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: Thử các nguồn
+      - name: Thử TradingView scanner và lịch sử giá
         run: |
-          t() { echo "=== $1"; curl -sS -m 25 -A "Mozilla/5.0" -w "\nHTTP %{http_code}\n" "$2" | head -c 700; echo; }
-          NOW=$(date +%s); FROM=$((NOW-86400*400))
-          t tcbs-bars "https://apipubaws.tcbs.com.vn/stock-insight/v1/stock/bars-long-term?ticker=FPT&type=stock&resolution=D&to=$NOW&countBack=5"
-          t vnd-prices "https://api-finfo.vndirect.com.vn/v4/stock_prices?q=code:FPT&sort=date&size=3"
-          t vnd-ratios "https://api-finfo.vndirect.com.vn/v4/ratios/latest?order=reportDate&where=code:FPT~itemCode:51003,51016,51050&filter=itemCode,value"
-          t vnd-snap "https://finfo-api.vndirect.com.vn/v4/stock_prices?q=code:FPT~date:gte:2026-11-10&sort=date&size=3"
-          t tcbs-ratio "https://apipubaws.tcbs.com.vn/tcanalysis/v1/ticker/FPT/overview"
-          t tcbs-fin "https://apipubaws.tcbs.com.vn/tcanalysis/v1/finance/FPT/financialratio?yearly=0&isAll=false"
-          t fpts-chart "https://marketstream.fpts.com.vn/mdds/quote?Exchange=MDDS&TypeMsg=M1"
-          t tradingview-scan "https://scanner.tradingview.com/vietnam/scan"
+          echo "=== scanner"
+          curl -sS -m 30 -A "Mozilla/5.0" -H "Content-Type: application/json" -X POST "https://scanner.tradingview.com/vietnam/scan" -d '{"symbols":{"tickers":["HOSE:FPT","HOSE:VCB","HOSE:HPG"]},"columns":["name","description","close","change","volume","market_cap_basic","price_earnings_ttm","price_book_fq","earnings_per_share_basic_ttm","book_value_per_share_fq","price_52_week_high","price_52_week_low","return_on_equity_fq","sector","industry","exchange","currency","update_mode","type"]}' | head -c 1800; echo
+          echo "=== history"
+          curl -sS -m 30 -A "Mozilla/5.0" "https://api-finfo.vndirect.com.vn/v4/stock_prices?q=code:FPT~date:gte:2026-01-01&sort=date&size=400" -o h.json -w "HTTP %{http_code} %{size_download} bytes\n"
+          python3 -c "
+          import json;d=json.load(open('h.json'));r=d['data'];print(len(r),d.get('totalElements'));print(r[0]);print(r[-1])"
