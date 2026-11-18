@@ -94,11 +94,16 @@ section{padding-block:44px;border-top:1px solid var(--line)}
 .sample{background:var(--ref-soft);color:var(--ref);border:1px solid rgba(242,193,78,.4);border-radius:10px;padding:10px 14px;font-size:14px;font-weight:500;margin-top:16px}
 
 .videocard{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:center}
-.poster{aspect-ratio:16/9;width:100%;border-radius:14px;display:grid;place-items:center;position:relative;overflow:hidden;
-  background:radial-gradient(circle at 30% 30%,#1e3a2b,var(--surface2) 70%);border:1px solid var(--line)}
-.poster .cap{position:absolute;left:16px;bottom:12px;right:16px;font-weight:600;font-size:14px;color:var(--muted)}
-.play{width:76px;height:76px;border-radius:50%;background:var(--accent);display:grid;place-items:center;text-decoration:none;box-shadow:0 8px 28px -6px rgba(143,214,168,.4)}
-.play svg{width:30px;height:30px;fill:var(--accent-fg);margin-left:4px}
+.player{position:relative;border-radius:14px;overflow:hidden;background:#000;border:1px solid var(--line);aspect-ratio:16/9}
+.player video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
+.sound{position:absolute;top:12px;right:12px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(10,14,12,.72);color:var(--fg);font:600 14px var(--font-body);cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.sound:hover{background:rgba(10,14,12,.9)}
+.sound svg{width:20px;height:20px;fill:currentColor;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sound svg path:not(:first-child){fill:none}
+.sound .w{display:none}
+.sound[aria-pressed="true"] .w{display:inline}
+.sound[aria-pressed="true"] .x{display:none}
+.vtext b{color:var(--fg)}
 .vtext{display:flex;flex-direction:column;gap:14px;padding:6px 8px 6px 0;align-items:flex-start}
 .vtext h3{font-size:22px;font-weight:800}
 .vtext p{color:var(--muted)}
@@ -226,16 +231,17 @@ footer b{color:var(--fg)}
     <section id="video">
       <div class="sec-head"><h2><em>01 /</em>Video giới thiệu</h2></div>
       <div class="videocard">
-        <div class="poster">
-          <a class="play" href="https://www.facebook.com/reel/1104317039144457" target="_blank" rel="noopener" aria-label="Xem video giới thiệu trên Facebook">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>
-          </a>
-          <span class="cap">Trần Đức Rin giới thiệu bản thân</span>
+        <div class="player">
+          <video id="intro" src="assets/video-gioi-thieu.mp4" poster="assets/poster.jpg" muted loop playsinline preload="metadata" controls controlslist="nodownload" aria-label="Video giới thiệu Trần Đức Rin"></video>
+          <button class="sound" id="sound" type="button" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path class="x" d="M16 9l5 6M21 9l-5 6"/><path class="w" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>
+            <span id="sound-label">Bật tiếng</span>
+          </button>
         </div>
         <div class="vtext">
           <h3>Gặp tôi qua video ngắn</h3>
-          <p>Video giới thiệu được đăng trên Facebook. Bấm nút để xem, video mở trong tab mới.</p>
-          <a class="btn primary" href="https://www.facebook.com/reel/1104317039144457" target="_blank" rel="noopener">Xem video trên Facebook</a>
+          <p>Video giới thiệu dài khoảng 1 phút 40 giây. Video tự phát không tiếng khi bạn cuộn tới, bấm <b>Bật tiếng</b> để nghe tôi giới thiệu.</p>
+          <a class="btn line" href="https://www.facebook.com/reel/1104317039144457" target="_blank" rel="noopener">Xem thêm trên Facebook</a>
         </div>
       </div>
     </section>
@@ -353,6 +359,29 @@ footer b{color:var(--fg)}
       '<td class="note">'+p.note+'</td></tr>';
   }).join('');
 
+
+  (function(){
+    var v=document.getElementById('intro'),btn=document.getElementById('sound'),lab=document.getElementById('sound-label');
+    if(!v||!btn)return;
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function setLabel(){var on=!v.muted;btn.setAttribute('aria-pressed',on?'true':'false');lab.textContent=on?'Tắt tiếng':'Bật tiếng'}
+    btn.addEventListener('click',function(){
+      v.muted=!v.muted;
+      if(!v.muted&&v.paused){var pr=v.play();if(pr&&pr.catch)pr.catch(function(){})}
+      setLabel();
+    });
+    v.addEventListener('volumechange',setLabel);
+    if('IntersectionObserver' in window&&!reduce){
+      var io=new IntersectionObserver(function(es){
+        es.forEach(function(e){
+          if(e.isIntersecting&&e.intersectionRatio>=0.5){var pr=v.play();if(pr&&pr.catch)pr.catch(function(){})}
+          else if(!e.isIntersecting){v.pause()}
+        });
+      },{threshold:[0,0.5]});
+      io.observe(v);
+    }
+    setLabel();
+  })();
   function selectText(el){
     try{var r=document.createRange();r.selectNodeContents(el);var s=window.getSelection();s.removeAllRanges();s.addRange(r);}catch(e){}
   }
