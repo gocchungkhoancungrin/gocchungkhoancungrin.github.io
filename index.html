@@ -331,6 +331,25 @@ footer b{color:var(--fg)}
 .to-top.show{opacity:1;transform:none;pointer-events:auto}
 .to-top:hover{background:var(--accent-soft)}
 .to-top svg{width:20px;height:20px}
+
+.nw-list{display:grid;gap:10px}
+.nw{display:grid;grid-template-columns:78px minmax(0,1fr);gap:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.nw-t{font-family:var(--font-mono);text-align:left;padding-top:2px}
+.nw-t b{display:block;font-size:17px;color:var(--fg)}
+.nw-t span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.nw-h{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.nw-h h3{font-size:17px;font-weight:700;line-height:1.4;text-wrap:balance;min-width:0}
+.tag{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:3px 8px;white-space:nowrap}
+.new{display:inline-block;vertical-align:2px;margin-left:8px;font-family:var(--font-mono);font-size:11px;font-weight:800;letter-spacing:.08em;color:#0a0e0c;background:var(--down);border-radius:5px;padding:2px 7px;animation:blink 1s steps(2,jump-none) infinite}
+@keyframes blink{0%{opacity:1}50%{opacity:.2}100%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.new{animation:none}}
+.nw p{font-size:15px;color:var(--muted);line-height:1.65;margin-top:6px}
+.nw-f{font-size:12.5px;color:var(--muted);margin-top:8px}
+.nw-f a{color:var(--accent);text-decoration:none;font-weight:600;margin-left:6px}
+.nw-more{margin-top:12px;font:inherit;font-weight:600;font-size:14px;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 18px;cursor:pointer}
+.nw-more:hover{border-color:var(--accent)}
+.nw-empty{color:var(--muted);padding:18px;border:1px dashed var(--line);border-radius:14px}
+@media (max-width:640px){.nw{grid-template-columns:1fr;gap:6px;padding:14px}.nw-t{display:flex;gap:10px;align-items:baseline}.nw-t b{font-size:15px}}
 @media (max-width:820px){
   .hero-grid{grid-template-columns:1fr;gap:0;min-height:0;padding-top:12px}
   .hero-text{padding-block:24px 8px}
@@ -357,6 +376,7 @@ footer b{color:var(--fg)}
       <a href="#video">Về tôi</a>
       <a href="#thi-truong">Thị trường</a>
       <a href="#nhan-dinh">Nhận định</a>
+      <a href="#tin-nhanh">Tin nhanh</a>
       <a href="#khuyen-nghi">Khuyến nghị</a>
       <div class="dd" id="dd">
         <button type="button" class="dd-btn" id="dd-btn" aria-expanded="false" aria-controls="dd-panel">Danh mục ngành <span aria-hidden="true">▾</span></button>
@@ -457,6 +477,16 @@ footer b{color:var(--fg)}
       </div>
       <article class="brief" id="brief" aria-live="polite"></article>
       <nav class="pager" id="pager" aria-label="Các bản tin theo ngày"></nav>
+    </section>
+
+    <section id="tin-nhanh">
+      <div class="sec-head">
+        <h2><em>04 /</em>Tin nhanh chứng khoán</h2>
+        <span class="stamp" id="nw-stamp"></span>
+      </div>
+      <div class="chips" id="nw-chips" role="group" aria-label="Lọc tin theo nhóm"></div>
+      <div class="nw-list" id="nw-list" aria-live="polite"></div>
+      <button type="button" class="nw-more" id="nw-more" hidden>Xem thêm tin</button>
     </section>
 
     <section id="khuyen-nghi">
@@ -943,6 +973,53 @@ var SECTORS=[];
   draw();
 })();
 
+
+/* ===== Tin nhanh chứng khoán =====
+   Nội dung nằm ở file data/news.json (mỗi tin: t = "YYYY-MM-DD HH:MM" giờ Việt Nam, tag, title, sum, src, url tùy chọn).
+   Tin trong vòng 24 giờ gần nhất tự hiện chữ NEW nhấp nháy; tin có giờ đăng ở tương lai sẽ tự ẩn cho đến lúc đó. */
+var NEWS_FALLBACK=[{"t": "2026-11-17 17:00", "tag": "Doanh nghiệp", "title": "SAB tạm ứng cổ tức năm 2026 mức 3.000 đồng/cổ phiếu", "sum": "Sabeco công bố tạm ứng cổ tức năm tài chính 2026 bằng tiền, mức 3.000 đồng trên mỗi cổ phiếu.", "src": "Vietcap"}, {"t": "2026-11-17 16:50", "tag": "Doanh nghiệp", "title": "VHC: doanh thu tháng 10 tăng 17% so với cùng kỳ, chi trả cổ tức 3.000 đồng/cổ phiếu", "sum": "Thị trường Mỹ phục hồi và doanh số tại EU tăng mạnh trong bối cảnh giá xuất khẩu có xu hướng tăng.", "src": "Vietcap"}, {"t": "2026-11-17 16:40", "tag": "Doanh nghiệp", "title": "CTR: lợi nhuận trước thuế tháng 10 tăng 17%, bổ sung 80 trạm BTS", "sum": "Doanh thu tháng 10 đạt 1,42 nghìn tỷ đồng (+8%), lợi nhuận trước thuế 74 tỷ đồng (+17%). Tổng danh mục lên 12.080 trạm BTS.", "src": "Vietcap"}, {"t": "2026-11-17 16:30", "tag": "Vĩ mô", "title": "Nghị định 407/2026/NĐ-CP: cơ chế tài chính đặc thù cho EVN", "sum": "Nghị định có hiệu lực từ 28/12/2026, cho phép phân bổ chi phí và lỗ chênh lệch tỷ giá tối đa 5 năm, có thể gián tiếp hỗ trợ POW và PGV.", "src": "Vietcap"}];
+(function(){
+  var items=[],tag='all',shown=6,PAGE=6;
+  var list=document.getElementById('nw-list'),more=document.getElementById('nw-more'),chips=document.getElementById('nw-chips'),stamp=document.getElementById('nw-stamp');
+  function ts(t){var m=/^(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d)/.exec(t||'');return m?Date.parse(m[1]+'-'+m[2]+'-'+m[3]+'T'+m[4]+':'+m[5]+':00+07:00'):NaN}
+  function el(n,c,t){var e=document.createElement(n);if(c)e.className=c;if(t!==undefined)e.textContent=t;return e}
+  function ago(ms){var m=Math.floor(ms/60000);if(m<1)return 'vừa xong';if(m<60)return m+' phút trước';var h=Math.floor(m/60);return h<24?h+' giờ trước':Math.floor(h/24)+' ngày trước'}
+  function vn(ms){var d=new Date(ms+7*3600000),p=function(n){return (n<10?'0':'')+n};return {hm:p(d.getUTCHours())+':'+p(d.getUTCMinutes()),dm:p(d.getUTCDate())+'/'+p(d.getUTCMonth()+1)}}
+  function render(){
+    var now=Date.now();
+    var all=items.map(function(x){x._ms=ts(x.t);return x}).filter(function(x){return !isNaN(x._ms)&&x._ms<=now+60000}).sort(function(a,b){return b._ms-a._ms});
+    var fresh=all.filter(function(x){return now-x._ms<86400000}).length;
+    stamp.textContent=fresh?fresh+' tin mới trong 24 giờ qua':'Cập nhật liên tục trong ngày';
+    var tags=[];all.forEach(function(x){if(x.tag&&tags.indexOf(x.tag)<0)tags.push(x.tag)});
+    if(tag!=='all'&&tags.indexOf(tag)<0)tag='all';
+    chips.innerHTML='';
+    if(tags.length>1)['all'].concat(tags).forEach(function(t){
+      var b=el('button','chip',t==='all'?'Tất cả':t);b.type='button';b.setAttribute('aria-pressed',t===tag);
+      b.addEventListener('click',function(){tag=t;shown=PAGE;render()});chips.appendChild(b)});
+    var f=all.filter(function(x){return tag==='all'||x.tag===tag});
+    list.innerHTML='';
+    if(!f.length){list.appendChild(el('p','nw-empty','Chưa có tin nào. Mình sẽ cập nhật ngay khi có tin mới.'))}
+    f.slice(0,shown).forEach(function(x){
+      var d=vn(x._ms),a=el('article','nw'),t=el('div','nw-t'),b=el('div','nw-b'),h=el('div','nw-h'),h3=el('h3','',x.title||'');
+      t.appendChild(el('b','',d.hm));t.appendChild(el('span','',d.dm));
+      if(x.tag)h.appendChild(el('span','tag',x.tag));
+      if(now-x._ms<86400000)h3.appendChild(el('span','new','NEW'));
+      h.appendChild(h3);b.appendChild(h);
+      if(x.sum)b.appendChild(el('p','',x.sum));
+      var ft=el('div','nw-f',(x.src?'Nguồn: '+x.src+' · ':'')+ago(now-x._ms));
+      if(/^https?:\/\//.test(x.url||'')){var l=el('a','','Đọc thêm ↗');l.href=x.url;l.target='_blank';l.rel='noopener noreferrer';ft.appendChild(l)}
+      b.appendChild(ft);a.appendChild(t);a.appendChild(b);list.appendChild(a)});
+    more.hidden=f.length<=shown;
+  }
+  more.addEventListener('click',function(){shown+=PAGE;render()});
+  function load(){
+    fetch('data/news.json?t='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json()})
+      .then(function(d){items=d.items||[];render()}).catch(function(){if(!items.length){items=NEWS_FALLBACK;render()}});
+  }
+  items=NEWS_FALLBACK;render();load();
+  setInterval(function(){if(!document.hidden)render()},60000);
+  setInterval(function(){if(!document.hidden)load()},300000);
+})();
 /* ===== Ngành ngân hàng ===== */
 var BANK={
   stamp:'Lũy kế đến Q3/2026 · 27 ngân hàng',
