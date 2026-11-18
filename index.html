@@ -165,7 +165,7 @@ section{padding-block:44px;border-top:1px solid var(--line)}
 .dash{width:10px;height:3px;border-radius:2px;background:var(--ref)}
 .brd .ref{color:var(--ref)}
 .tablebox{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:760px}
+table{width:100%;border-collapse:collapse;min-width:700px}
 th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:600;padding:14px 16px;border-bottom:1px solid var(--line);background:var(--surface2)}
 td{padding:16px;border-bottom:1px solid var(--line);vertical-align:top;font-size:15px}
 tr:last-child td{border-bottom:0}
@@ -178,6 +178,20 @@ th.r,td.r{text-align:right}
 .pill.sell{background:var(--down-soft);color:var(--down)}
 .note{color:var(--muted);max-width:30ch}
 
+.recbox{display:flex;flex-direction:column}
+.recbox .tablebox{border-radius:16px 16px 0 0;border-bottom:0}
+.teaser{position:relative;border:1px solid var(--line);border-top:1px solid var(--line);border-radius:0 0 16px 16px;background:var(--surface);overflow:hidden;min-height:250px}
+.teaser-rows{display:flex;flex-direction:column;filter:blur(7px);opacity:.55;pointer-events:none;user-select:none}
+.trow{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr 2.4fr;gap:18px;align-items:center;padding:20px 16px;border-bottom:1px solid var(--line)}
+.trow .b{display:block;height:14px;border-radius:7px;background:var(--muted);opacity:.55}
+.trow .w1{width:60%;background:var(--accent);opacity:.7}.trow .w2{width:70%;background:var(--up);opacity:.5}.trow .w3{width:55%;margin-left:auto}.trow .w4{width:90%}
+.teaser::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(17,24,21,0) 0%,var(--surface) 78%);pointer-events:none}
+.teaser-cta{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:16px}
+.teaser-cta h3{font-size:clamp(18px,2.6vw,22px);font-weight:800}
+.teaser-cta p{color:var(--muted);font-size:14.5px;max-width:42ch}
+.cta-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+@media (max-width:700px){#khuyen-nghi table{min-width:0}#khuyen-nghi th:nth-child(6),#khuyen-nghi td:nth-child(6){display:none}#khuyen-nghi th,#khuyen-nghi td{padding:12px 8px;font-size:14px}#khuyen-nghi th{font-size:11px;letter-spacing:.03em}#khuyen-nghi .tick{font-size:16px}#khuyen-nghi .pill{padding:3px 8px;font-size:11px}}
+@media (max-width:700px){.trow{grid-template-columns:1fr 1fr 1fr;gap:12px}.trow .b:nth-child(n+4){display:none}.teaser{min-height:260px}}
 .contact{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;min-width:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 .card h3{font-size:14px;color:var(--muted);font-weight:600}
@@ -304,25 +318,41 @@ footer b{color:var(--fg)}
     <section id="khuyen-nghi">
       <div class="sec-head">
         <h2><em>03 /</em>Cổ phiếu khuyến nghị</h2>
-        <span class="stamp">Giá tính theo nghìn đồng</span>
+        <span class="stamp">Giá tham chiếu ngày 17/11/2026</span>
       </div>
-      <div class="tablebox">
-        <table>
-          <thead>
-            <tr>
-              <th>Mã cổ phiếu</th>
-              <th>Khuyến nghị</th>
-              <th class="r">Vùng mua</th>
-              <th class="r">Giá mục tiêu</th>
-              <th class="r">Cắt lỗ</th>
-              <th class="r">Tiềm năng</th>
-              <th>Ghi chú</th>
-            </tr>
-          </thead>
-          <tbody id="picks"></tbody>
-        </table>
+      <div class="recbox">
+        <div class="tablebox">
+          <table>
+            <thead>
+              <tr>
+                <th>Mã cổ phiếu</th>
+                <th>Khuyến nghị</th>
+                <th class="r">Giá 17/11</th>
+                <th class="r">Giá mục tiêu</th>
+                <th class="r">Tiềm năng</th>
+                <th>Luận điểm</th>
+              </tr>
+            </thead>
+            <tbody id="picks"></tbody>
+          </table>
+        </div>
+        <div class="teaser">
+          <div class="teaser-rows" aria-hidden="true">
+            <div class="trow"><i class="b w1"></i><i class="b w2"></i><i class="b w3"></i><i class="b w3"></i><i class="b w3"></i><i class="b w4"></i></div>
+            <div class="trow"><i class="b w1"></i><i class="b w2"></i><i class="b w3"></i><i class="b w3"></i><i class="b w3"></i><i class="b w4"></i></div>
+            <div class="trow"><i class="b w1"></i><i class="b w2"></i><i class="b w3"></i><i class="b w3"></i><i class="b w3"></i><i class="b w4"></i></div>
+          </div>
+          <div class="teaser-cta">
+            <h3>Còn nhiều cổ phiếu khuyến nghị khác</h3>
+            <p>Liên hệ để nhận danh sách đầy đủ và cập nhật mới mỗi ngày.</p>
+            <div class="cta-row">
+              <a class="btn primary" href="https://zalo.me/0986074224" target="_blank" rel="noopener">Nhận thêm cổ phiếu khuyến nghị</a>
+              <a class="btn line" href="tel:0986074224">Gọi ngay</a>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="sample" role="note">Mã ABC, XYZ, DEF và các mức giá là dữ liệu giả. Danh sách thật sẽ được thay vào khi bạn gửi.</div>
+      <div class="sample" role="note">Bảng trên là dữ liệu mẫu lấy từ báo cáo Vietcap ngày 17/11/2026, dùng để minh họa. Giá tính theo nghìn đồng. Chỉ mang tính tham khảo, không phải lời mời mua hoặc bán.</div>
     </section>
 
     <section id="lien-he">
@@ -450,18 +480,18 @@ footer b{color:var(--fg)}
   loop();
 
   var picks=[
-    {t:'ABC',co:'Công ty mẫu A',rec:'buy',recText:'MUA',buy:'24,5 – 25,5',target:29.0,stop:'23,0',entry:25.0,note:'Lợi nhuận quý tăng, dòng tiền tích cực.'},
-    {t:'XYZ',co:'Công ty mẫu B',rec:'buy',recText:'MUA',buy:'47,5 – 49,5',target:56.0,stop:'45,0',entry:48.5,note:'Vượt đỉnh ngắn hạn với thanh khoản cao.'},
-    {t:'DEF',co:'Công ty mẫu C',rec:'hold',recText:'NẮM GIỮ',buy:'—',target:14.0,stop:'11,0',entry:12.2,note:'Chờ tín hiệu xác nhận xu hướng.'}
+    {t:'VCB',co:'Vietcombank',rec:'buy',recText:'MUA',now:53.2,target:73.0,note:'Lợi nhuận tăng nhờ NIM cải thiện. P/E 2026 ước 11,2 lần.'},
+    {t:'HDB',co:'HDBank',rec:'buy',recText:'MUA',now:22.3,target:27.2,note:'ROE dự phóng 2026 khoảng 24,7%, thuộc nhóm cao nhất ngành.'},
+    {t:'CTG',co:'VietinBank',rec:'buy',recText:'MUA',now:30.95,target:48.8,note:'Kết quả 9T2026 vượt kỳ vọng, NIM cải thiện. P/E 2026 ước 6,6 lần.'},
+    {t:'FRT',co:'FPT Retail',rec:'buy',recText:'MUA',now:146.0,target:192.0,note:'Lợi nhuận 2026 ước tăng gần gấp đôi nhờ chuỗi Long Châu.'}
   ];
-  function fmt(n){return n.toFixed(1).replace('.',',')}
+  function fmtPrice(n){return n.toLocaleString('vi-VN',{minimumFractionDigits:1,maximumFractionDigits:2})}
   document.getElementById('picks').innerHTML=picks.map(function(p){
-    var up=((p.target-p.entry)/p.entry*100).toFixed(1).replace('.',',');
+    var up=((p.target-p.now)/p.now*100).toLocaleString('vi-VN',{minimumFractionDigits:1,maximumFractionDigits:1});
     return '<tr><td><span class="tick">'+p.t+'</span><span class="co">'+p.co+'</span></td>'+
       '<td><span class="pill '+p.rec+'">'+p.recText+'</span></td>'+
-      '<td class="r num">'+p.buy+'</td>'+
-      '<td class="r num">'+fmt(p.target)+'</td>'+
-      '<td class="r num down">'+p.stop+'</td>'+
+      '<td class="r num">'+fmtPrice(p.now)+'</td>'+
+      '<td class="r num">'+fmtPrice(p.target)+'</td>'+
       '<td class="r num up">+'+up+'%</td>'+
       '<td class="note">'+p.note+'</td></tr>';
   }).join('');
