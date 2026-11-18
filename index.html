@@ -1035,6 +1035,22 @@ var BRIEFS=[
     [].forEach.call($('stk-rng').children,function(x){x.setAttribute('aria-pressed',x===b)});draw()});
   $('stk-tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;tab=b.getAttribute('data-t');
     [].forEach.call($('stk-tabs').children,function(x){x.setAttribute('aria-selected',x===b)});mets()});
+  var LIVE='https://raw.githubusercontent.com/gocchungkhoancungrin/gocchungkhoancungrin.github.io/data/live.json';
+  function paint(q){
+    $('stk-price').textContent=f(q.p,0);
+    var up=q.ch>0,dn=q.ch<0;$('stk-chg').className=up?'up':(dn?'down':'ref');
+    $('stk-chg').textContent=(up?'▲ ':(dn?'▼ ':'– '))+f(Math.abs(q.ch),2)+'%';
+    $('stk-vol').textContent=f(q.v,0)
+  }
+  function live(){
+    get(LIVE).then(function(d){
+      if(!d||!d.q||!d.updated||d.updated.slice(0,10)<UPD.slice(0,10))return;
+      for(var t in d.q){var a=d.q[t],o=Q[t];if(!o)continue;o.p=a[0];o.ch=a[1];o.v=a[2];if(a[3]!=null)o.o=a[3];if(a[4]!=null)o.h=a[4];if(a[5]!=null)o.l=a[5]}
+      if(cur&&Q[cur])paint(Q[cur]);
+      $('stk-live').textContent='● Giá cập nhật mỗi phút, chậm khoảng 15 phút · '+d.updated.slice(11,16);
+      var dm=d.updated.slice(0,10).split('-');$('stk-stamp').textContent='Giá ngày '+dm[2]+'/'+dm[1]+'/'+dm[0]+', chỉ số tài chính theo báo cáo gần nhất'
+    }).catch(function(){})
+  }
   function load(){
     get(BASE+'quotes.json').then(function(d){
       Q=d.quotes;UPD=d.updated;var u=d.updated.split(' ');var dm=u[0].split('-');
@@ -1043,6 +1059,7 @@ var BRIEFS=[
       var ch=['FPT','VCB','HPG','MWG','SSI','FTS','SHS'].filter(function(c){return Q[c]});
       $('stk-chips').innerHTML=ch.map(function(c){return '<button type="button" class="chip" aria-pressed="false">'+c+'</button>'}).join('');
       if(!cur&&Q.FPT)show('FPT');
+      live();setInterval(function(){if(!document.hidden)live()},60000);
     }).catch(function(){$('stk-live').textContent='Chưa tải được dữ liệu';$('stk-msg').hidden=false;$('stk-msg').textContent='Chưa tải được dữ liệu cổ phiếu. Bạn thử tải lại trang sau ít phút.'});
   }
   window.addEventListener('resize',function(){if(chart)setTimeout(function(){chart.timeScale().fitContent()},80)});

@@ -36,6 +36,25 @@ jobs:
           START=$(date +%s)
           FIRST=1
           while true; do
+            # Giá toàn bộ cổ phiếu (TradingView, chậm khoảng 15 phút) ghi vào live.json
+            python3 - <<'PY' || echo "Lấy giá cổ phiếu lỗi, bỏ qua vòng này"
+          import json, urllib.request, datetime, os
+          cols = ['name','close','change','volume','open','high','low','exchange']
+          body = json.dumps({'markets':['vietnam'],'symbols':{'query':{'types':['stock']}},'columns':cols,'range':[0,2000]}).encode()
+          req = urllib.request.Request('https://scanner.tradingview.com/vietnam/scan', data=body, headers={'Content-Type':'application/json','User-Agent':'Mozilla/5.0'})
+          rows = json.loads(urllib.request.urlopen(req, timeout=30).read().decode())['data']
+          q = {}
+          for row in rows:
+              d = dict(zip(cols, row['d']))
+              t = d['name']
+              if not t or len(t) > 5 or d['close'] is None or d['exchange'] not in ('HOSE','HNX','UPCOM'):
+                  continue
+              q[t] = [d['close'], round(d['change'] or 0, 2), d['volume'] or 0, d['open'], d['high'], d['low']]
+          if len(q) > 500:
+              vn = datetime.datetime.utcnow() + datetime.timedelta(hours=7)
+              json.dump({'updated': vn.strftime('%Y-%m-%d %H:%M:%S'), 'q': q}, open('live.json', 'w'), separators=(',', ':'))
+              print('live', len(q))
+          PY
             if curl -fsS --retry 2 --retry-delay 2 --max-time 20 \
                 "https://marketstream.fpts.com.vn/mdds/quote?Exchange=MDDS&TypeMsg=M1" -o quote.tmp \
               && python3 - <<'PY'
@@ -48,6 +67,7 @@ jobs:
             then
               mv quote.tmp quote.json
               git add quote.json
+              [ -f live.json ] && git add live.json
               if [ "$FIRST" = 1 ]; then
                 git commit -q -m "Số liệu thị trường"
                 FIRST=0
