@@ -232,6 +232,7 @@ footer b{color:var(--fg)}
 #nganh td{vertical-align:middle}
 @media (max-width:900px){.brief-pts{grid-template-columns:1fr}.brief{padding:20px 18px}}
 
+.bk-tag{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:4px 12px;margin-bottom:10px}
 .bk-lead{font-size:clamp(17px,2vw,20px);font-weight:700;line-height:1.4;margin-bottom:18px;text-wrap:balance}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:22px}
 .kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
@@ -349,7 +350,7 @@ footer b{color:var(--fg)}
     <a class="brand" href="#top">Trần Đức <span>Rin</span></a>
     <nav class="nav" aria-label="Điều hướng">
       <a href="#gioi-thieu">Giới thiệu</a>
-      <a href="#video">Video</a>
+      <a href="#video">Về tôi</a>
       <a href="#thi-truong">Thị trường</a>
       <a href="#khuyen-nghi">Khuyến nghị</a>
       <a href="#nhan-dinh">Nhận định</a>
@@ -398,7 +399,7 @@ footer b{color:var(--fg)}
 
   <div class="gutter"><div class="wrap">
     <section id="video">
-      <div class="sec-head"><h2><em>01 /</em>Video giới thiệu</h2></div>
+      <div class="sec-head"><h2><em>01 /</em>Về tôi</h2></div>
       <div class="videocard">
         <div class="player">
           <video id="intro" src="assets/video-gioi-thieu.mp4" poster="assets/poster.jpg" muted playsinline preload="metadata" controls controlslist="nodownload" aria-label="Video giới thiệu Trần Đức Rin"></video>
@@ -494,9 +495,10 @@ footer b{color:var(--fg)}
 
     <section id="ngan-hang">
       <div class="sec-head">
-        <h2><em>04 /</em>Ngành ngân hàng</h2>
+        <h2><em>04 /</em>Dữ liệu ngành</h2>
         <span class="stamp" id="bk-stamp"></span>
       </div>
+      <p class="bk-tag">Ngành ngân hàng</p>
       <p class="bk-lead" id="bk-lead"></p>
       <div class="kpis" id="bk-kpis"></div>
       <div class="tops" id="bk-tops"></div>
