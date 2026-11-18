@@ -382,6 +382,17 @@ footer b{color:var(--fg)}
 .mdl-note{font-size:13.5px;color:var(--muted);line-height:1.6;margin-top:10px}
 .mdl-foot{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
 .mdl-foot a{color:var(--accent);font-weight:600;text-decoration:none;margin-left:8px}
+
+.oil-h{font-size:16px;font-weight:700;margin:24px 0 10px}
+#oil-tbl{min-width:640px}
+#oil-tbl th,#oil-tbl td{text-align:right;white-space:nowrap}
+#oil-tbl th:first-child,#oil-tbl td:first-child{text-align:left}
+#oil-tbl td{font-family:var(--font-mono)}#oil-tbl td:first-child{font-family:var(--font-mono);font-weight:800}
+#oil-tbl td.up{color:var(--up)}#oil-tbl td.down{color:var(--down)}
+.tc-list{list-style:none;margin:0;padding:0;display:grid;gap:11px}
+.tc-list li{font-size:13.5px;line-height:1.55;color:var(--muted)}
+.tc-list b{display:block;color:var(--fg);font-size:14px;margin-bottom:1px}
+.kpi .d.cap{font-family:inherit;font-weight:500}
 @media (max-width:820px){
   .hero-grid{grid-template-columns:1fr;gap:0;min-height:0;padding-top:12px}
   .hero-text{padding-block:24px 8px}
@@ -565,11 +576,24 @@ footer b{color:var(--fg)}
         <h2><em>04 /</em>Dữ liệu ngành</h2>
         <span class="stamp" id="bk-stamp"></span>
       </div>
-      <p class="bk-tag">Ngành ngân hàng</p>
-      <p class="bk-lead" id="bk-lead"></p>
-      <div class="kpis" id="bk-kpis"></div>
-      <div class="tops" id="bk-tops"></div>
-      <p class="brief-note" id="bk-note"></p>
+      <div class="chips" id="sec-tabs" role="tablist" aria-label="Chọn ngành">
+        <button type="button" class="chip" role="tab" data-p="bank" aria-pressed="true">Ngân hàng</button>
+        <button type="button" class="chip" role="tab" data-p="oil" aria-pressed="false">Dầu khí</button>
+      </div>
+      <div id="p-bank">
+        <p class="bk-lead" id="bk-lead"></p>
+        <div class="kpis" id="bk-kpis"></div>
+        <div class="tops" id="bk-tops"></div>
+        <p class="brief-note" id="bk-note"></p>
+      </div>
+      <div id="p-oil" hidden>
+        <p class="bk-lead" id="oil-lead"></p>
+        <div class="kpis" id="oil-kpis"></div>
+        <div class="tops" id="oil-cards"></div>
+        <h4 class="oil-h">Các mã dầu khí chính (dự phóng của SSI Research)</h4>
+        <div class="tablebox"><table id="oil-tbl"><thead></thead><tbody></tbody></table></div>
+        <p class="brief-note" id="oil-note"></p>
+      </div>
     </section>
 
     <section id="tra-cuu">
@@ -1134,17 +1158,87 @@ var BANK={
       return '<div class="brow"><b>'+x[0]+'</b><span class="bar"><i style="width:'+(x[1]/mx*100).toFixed(1)+'%"></i></span><span class="n">'+vn(x[1],t.dp)+'</span></div>'}).join('')+'</div>'}).join('');
 })();
 
+
+/* ===== Ngành dầu khí (nguồn: SSI Research 12/10/2026) ===== */
+var OIL={
+  stamp:'Báo cáo SSI ngày 12/10/2026',
+  lead:'Cú sốc giá dầu từ xung đột Trung Đông đẩy lợi nhuận sau thuế toàn ngành dầu khí 6 tháng đầu năm 2026 lên 29 nghìn tỷ đồng (+240% so với cùng kỳ). SSI Research cho rằng lợi nhuận sẽ phân hóa trong năm 2027 khi giá dầu hạ nhiệt: nhóm thượng nguồn ổn định hơn, nhóm hạ nguồn chịu nhiều áp lực hơn.',
+  note:'Nguồn: SSI Research, Cập nhật ngành Dầu khí (12/10/2026). Dự phóng là ước tính của SSI Research, P/E tính theo giá ngày 10/9/2026. Mọi khuyến nghị chỉ mang tính chất tham khảo.',
+  kpis:[
+    {l:'Lợi nhuận sau thuế toàn ngành 6T2026',v:'29',u:'nghìn tỷ',d:'+240%',t:'good'},
+    {l:'Giá dầu Brent (tháng 9/2026)',v:'>100',u:'USD/thùng',d:'+50%',t:'good',c:'từ cuối tháng 2/2026'},
+    {l:'VN-Index từ đầu năm',v:'-2,6',u:'%',c:'trong khi cổ phiếu dầu khí tăng vượt trội'},
+    {l:'Cước tàu chở dầu thô',v:'+550',u:'%',c:'giá giao ngay, từ đầu năm'},
+    {l:'Cước tàu chở sản phẩm dầu',v:'+218',u:'%',c:'giá giao ngay, từ đầu năm'},
+    {l:'Chênh lệch giá dầu diesel Singapore',v:'71',u:'USD/thùng',c:'tháng 8, so với 21,9 trước chiến tranh'},
+    {l:'Nhập khẩu dầu thô và xăng dầu 8T2026',v:'14,54',u:'tỷ USD',c:'gần bằng cả năm 2025'},
+    {l:'Giả định giá Brent bình quân 2026',v:'80–90',u:'USD/thùng',c:'năm 2027: 75–85 USD/thùng'}
+  ],
+  cards:[
+    {h:'Lợi nhuận phân hóa năm 2027',r:[
+      ['Thượng nguồn (PVD, PVS)','Ổn định hơn nhờ chu kỳ đầu tư lớn, các dự án như Lô B và hợp đồng dài hạn.'],
+      ['Trung nguồn (GAS)','Biên lợi nhuận bình thường hóa nhưng vẫn cao hơn trước xung đột.'],
+      ['Hạ nguồn (BSR, PLX, OIL)','Mất lợi thế hàng tồn kho giá thấp, chênh lệch giá sản phẩm lọc dầu thu hẹp.'],
+      ['Vận tải (PVT)','Giá thuê tàu duy trì cao hơn đáng kể so với trước xung đột.']]},
+    {h:'Dự án thượng nguồn đáng chú ý',r:[
+      ['Lạc Đà Vàng','Dự kiến đón dòng dầu đầu tiên trong quý 4/2026.'],
+      ['RC-12, BK-26','Mục tiêu đưa vào vận hành trong tháng 12/2026.'],
+      ['Lô B – Ô Môn','Dự kiến đón dòng khí đầu tiên vào nửa cuối năm 2027.'],
+      ['Nam Du – U Minh','Khoảng 700 triệu m³/năm, đáp ứng khoảng 30% nhu cầu của Cà Mau từ cuối năm 2028.']]},
+    {h:'Chính sách mới',r:[
+      ['Luật Dầu khí sửa đổi','Thông qua ngày 23/8/2026, có hiệu lực từ 1/3/2027. Hợp đồng kéo dài tới 30–35 năm, có ưu đãi cho mỏ cận biên.'],
+      ['Khung pháp lý mới','Bổ sung quy định cho thu giữ và lưu trữ carbon (CCS) và năng lượng ngoài khơi.'],
+      ['Nghị định xăng dầu (dự thảo lần 14)','Doanh nghiệp được tự xác định giá bán lẻ theo công thức, có thể hỗ trợ biên lợi nhuận của PLX và OIL. Còn chờ phê duyệt.']]}
+  ],
+  head:['Mã','LNST 2026F','LNST 2027F','P/E 2026F','P/E 2027F','ROE 2026F','Cổ tức 2026F'],
+  rows:[
+    ['PVT','+73%','+33%','7,2x','5,9x','19,6%','4,0%'],
+    ['PLX','+33%','+2%','13,6x','13,3x','12,8%','2,7%'],
+    ['GAS','+40%','-17%','12,5x','15,0x','22,4%','2,5%'],
+    ['PVD','+4%','+46%','16,4x','11,2x','6,6%','5,5%'],
+    ['PVS','+14%','-6%','11,3x','12,0x','12,9%','2,1%']
+  ]
+};
+(function(){
+  function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  document.getElementById('oil-lead').textContent=OIL.lead;
+  document.getElementById('oil-note').textContent=OIL.note;
+  document.getElementById('oil-kpis').innerHTML=OIL.kpis.map(function(k){
+    var d='';
+    if(k.d){var ar=k.d.charAt(0)==='+'?'▲ ':(k.d.charAt(0)==='-'?'▼ ':'');d='<span class="d '+k.t+'">'+ar+esc(k.d)+'<i>'+esc(k.c||'so với cùng kỳ')+'</i></span>'}
+    else d='<span class="d neu cap">'+esc(k.c||'')+'</span>';
+    return '<div class="kpi"><span class="l">'+esc(k.l)+'</span><span class="v">'+esc(k.v)+'<small>'+esc(k.u)+'</small></span>'+d+'</div>'}).join('');
+  document.getElementById('oil-cards').innerHTML=OIL.cards.map(function(c){
+    return '<div class="top-card"><h3>'+esc(c.h)+'</h3><ul class="tc-list">'+c.r.map(function(x){return '<li><b>'+esc(x[0])+'</b>'+esc(x[1])+'</li>'}).join('')+'</ul></div>'}).join('');
+  var t=document.getElementById('oil-tbl');
+  t.tHead.innerHTML='<tr>'+OIL.head.map(function(h){return '<th>'+esc(h)+'</th>'}).join('')+'</tr>';
+  t.tBodies[0].innerHTML=OIL.rows.map(function(r){return '<tr>'+r.map(function(c,i){
+    var cl=(i===1||i===2)&&/^[+-]/.test(c)?(c.charAt(0)==='+'?' class="up"':' class="down"'):'';return '<td'+cl+'>'+esc(c)+'</td>'}).join('')+'</tr>'}).join('')}());
+(function(){
+  var tabs=document.getElementById('sec-tabs'),stamp=document.getElementById('bk-stamp');
+  var S={bank:function(){return BANK.stamp},oil:function(){return OIL.stamp}};
+  function pick(id){
+    [].forEach.call(tabs.children,function(b){b.setAttribute('aria-pressed',b.getAttribute('data-p')===id)});
+    document.getElementById('p-bank').hidden=id!=='bank';document.getElementById('p-oil').hidden=id!=='oil';
+    stamp.textContent=S[id]();
+  }
+  tabs.addEventListener('click',function(e){var b=e.target.closest('button');if(b)pick(b.getAttribute('data-p'))});
+  document.addEventListener('click',function(e){var a=e.target.closest('a[data-tab]');if(a)pick(a.getAttribute('data-tab'))});
+  window.pickSector=pick;
+})();
+
 /* ===== Danh mục ngành (menu hiện khi di chuột; trên điện thoại bấm để mở) ===== */
 var SECTOR_MENU=[
-  {n:'Ngân hàng',d:'Lợi nhuận, ROE, NIM, nợ xấu, top 5 theo chỉ tiêu',h:'#ngan-hang'},
-  {n:'Bất động sản'},{n:'Chứng khoán'},{n:'Thép'},{n:'Bán lẻ'},{n:'Dầu khí'},{n:'Công nghệ'}
+  {n:'Ngân hàng',d:'Lợi nhuận, ROE, NIM, nợ xấu, top 5 theo chỉ tiêu',h:'#ngan-hang',tab:'bank'},
+  {n:'Dầu khí',d:'Giá dầu, cước tàu, dự án, các mã chính',h:'#ngan-hang',tab:'oil'},
+  {n:'Bất động sản'},{n:'Chứng khoán'},{n:'Thép'},{n:'Bán lẻ'},{n:'Công nghệ'}
 ];
 (function(){
   var dd=document.getElementById('dd'),btn=document.getElementById('dd-btn'),pn=document.getElementById('dd-panel');
   var list=SECTOR_MENU.slice();
-  if(!document.getElementById('nganh').hidden)list.splice(1,0,{n:'So sánh các ngành',d:'P/E, P/B, ROE, nhận định từng ngành',h:'#nganh'});
+  if(!document.getElementById('nganh').hidden)list.splice(2,0,{n:'So sánh các ngành',d:'P/E, P/B, ROE, nhận định từng ngành',h:'#nganh'});
   pn.innerHTML='<div class="dd-in"><h5>Danh mục ngành</h5><div class="dd-grid">'+list.map(function(x){
-    return x.h?'<a href="'+x.h+'"><b>'+x.n+'</b><small>'+x.d+'</small></a>':'<span class="soon"><b>'+x.n+'</b><small>Sắp cập nhật</small></span>'}).join('')+'</div></div>';
+    return x.h?'<a href="'+x.h+'"'+(x.tab?' data-tab="'+x.tab+'"':'')+'><b>'+x.n+'</b><small>'+x.d+'</small></a>':'<span class="soon"><b>'+x.n+'</b><small>Sắp cập nhật</small></span>'}).join('')+'</div></div>';
   function set(o){dd.classList.toggle('open',o);btn.setAttribute('aria-expanded',o)}
   btn.addEventListener('click',function(e){e.stopPropagation();set(!dd.classList.contains('open'))});
   pn.addEventListener('click',function(e){if(e.target.closest('a'))set(false)});
