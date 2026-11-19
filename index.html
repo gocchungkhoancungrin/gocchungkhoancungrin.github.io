@@ -893,13 +893,24 @@ footer b{color:var(--fg)}
       '<td class="note">'+p.note+'</td></tr>';
   }
   var PK={},PKTRY=0;
+  /* Giá đóng cửa trong ngày: sau 15:00, nếu lịch sử chưa có phiên hôm nay thì lấy giá chốt từ live.json */
+  var PLIVE=null,LIVEURL='https://raw.githubusercontent.com/gocchungkhoancungrin/gocchungkhoancungrin.github.io/data/live.json';
+  function pkEff(t){
+    var a=PK[t]||[];
+    if(PLIVE&&PLIVE.q&&PLIVE.q[t]&&PLIVE.updated){
+      var d=PLIVE.updated.slice(0,10),hh=+PLIVE.updated.slice(11,13),ld=a.length?a[a.length-1][0]:'';
+      if(hh>=15&&d>ld&&PLIVE.q[t][0]>0)return a.concat([[d,0,0,0,PLIVE.q[t][0],0]]);
+    }
+    return a.length?a:undefined;
+  }
   function pkRender(){
-    document.getElementById('picks').innerHTML=PICKS.map(function(p){return pkRow(p,PK[p.t])}).join('');
-    var ds=Object.keys(PK).map(function(k){var a=PK[k];return a&&a.length?a[a.length-1][0]:''}).sort();
+    var EFF={};PICKS.forEach(function(p){EFF[p.t]=pkEff(p.t)});
+    document.getElementById('picks').innerHTML=PICKS.map(function(p){return pkRow(p,EFF[p.t])}).join('');
+    var ds=PICKS.map(function(p){var a=EFF[p.t];return a&&a.length?a[a.length-1][0]:''}).sort();
     if(ds.length&&ds[ds.length-1]){var d=ds[ds.length-1];document.getElementById('pk-stamp').textContent='Giá hiện tại cập nhật theo phiên '+dmy(d);document.getElementById('pk-now-h').innerHTML='Giá hiện tại<small>phiên '+d.slice(8)+'/'+d.slice(5,7)+'</small>'}
   }
   function pkLoad(){
-    var n=PICKS.length;
+    fetch(LIVEURL+'?t='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){PLIVE=j;pkRender()}).catch(function(){});
     PICKS.forEach(function(p){
       fetch(PBASE+p.t+'.json?t='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(a){PK[p.t]=a;pkRender()}).catch(function(){})
     });

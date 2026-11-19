@@ -2,7 +2,8 @@ name: Cập nhật dữ liệu cổ phiếu
 
 on:
   schedule:
-    # Mỗi ngày sau phiên (16:35 giờ Việt Nam), thêm một lần dự phòng lúc 18:35
+    # Mỗi ngày sau phiên (15:20 và 16:35 giờ Việt Nam), thêm một lần dự phòng lúc 18:35
+    - cron: '20 8 * * 1-5'
     - cron: '35 9 * * 1-5'
     - cron: '35 11 * * 1-5'
   workflow_dispatch:
