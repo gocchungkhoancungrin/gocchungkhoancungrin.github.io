@@ -1,6 +1,150 @@
 {
  "items": [
   {
+   "t": "2026-11-19 09:00",
+   "tag": "Vĩ mô",
+   "title": "CPI tháng 10/2026 tăng 5,09%, giá nhiên liệu giữ lạm phát trên 5%",
+   "sum": "Lạm phát cơ bản hạ xuống 4,04%, chênh lệch với CPI chung lên 1,05 điểm phần trăm, cao nhất từ tháng 7/2024. Từ 1/11, giá điện giảm 2% và thuế tiêu thụ đặc biệt với xăng về 0%.",
+   "src": "Shinhan Securities Vietnam, Cập nhật Kinh tế Việt Nam tháng 10/2026",
+   "points": [
+    "CPI tháng 10 tăng 5,09% so với cùng kỳ, gần như đi ngang so với 5,08% của tháng 9 và thấp hơn đỉnh 5,60% của tháng 5. So với tháng trước CPI tăng 0,20%. Bình quân 10 tháng, CPI tăng 4,57%.",
+    "Lạm phát cơ bản giảm xuống 4,04% từ 4,45%, cho thấy áp lực nằm chủ yếu ở nhiên liệu: giá nhiên liệu tăng 35,03% so với cùng kỳ, đóng góp khoảng 1,55 điểm phần trăm vào CPI chung. Giá gas tăng 51,2%.",
+    "Từ 1/11/2026, giá bán lẻ điện bình quân giảm 2% (xuống 2.159,9 đồng/kWh, chưa gồm VAT) và thuế tiêu thụ đặc biệt với xăng về 0% đến hết 31/3/2027.",
+    "Giá dầu Brent giảm 8,7% trong phiên 4/11 xuống 94,62 USD/thùng sau cuộc bầu cử giữa kỳ tại Mỹ. SSV cho rằng điều này giúp giảm áp lực lạm phát trong tháng 11 và có thể giúp CPI bình quân cả năm 2026 đạt mục tiêu khoảng 4,5% của Quốc hội."
+   ],
+   "table": {
+    "head": [
+     "Chỉ tiêu",
+     "10/2026",
+     "9/2026",
+     "10/2025"
+    ],
+    "rows": [
+     [
+      "CPI so với cùng kỳ",
+      "5,09%",
+      "5,08%",
+      "3,25%"
+     ],
+     [
+      "CPI so với tháng trước",
+      "0,20%",
+      "0,62%",
+      "0,20%"
+     ],
+     [
+      "Lạm phát cơ bản so với cùng kỳ",
+      "4,04%",
+      "4,45%",
+      "–"
+     ]
+    ]
+   },
+   "note": "Số liệu theo báo cáo của Shinhan Securities Vietnam (nguồn: Tổng cục Thống kê). Mọi nhận định chỉ mang tính chất tham khảo."
+  },
+  {
+   "t": "2026-11-19 08:55",
+   "tag": "Vĩ mô",
+   "title": "Xuất khẩu tháng 10 đạt 64,67 tỷ USD (+53,5%), xuất siêu lớn nhất 36 tháng",
+   "sum": "Xuất siêu 7,31 tỷ USD, tháng thứ hai liên tiếp. Giải ngân đầu tư công tháng 10 tăng 34,7%, FDI đăng ký 10 tháng tăng 74,0%.",
+   "src": "Shinhan Securities Vietnam, Cập nhật Kinh tế Việt Nam tháng 10/2026",
+   "points": [
+    "Xuất khẩu tháng 10 đạt 64,67 tỷ USD, tăng 53,5% so với cùng kỳ và 8,2% so với tháng trước; nhập khẩu 57,36 tỷ USD. Xuất siêu 7,31 tỷ USD, lớn nhất trong 36 tháng.",
+    "Khu vực FDI dẫn dắt (+61,2% so với cùng kỳ). Xuất khẩu điện tử 10 tháng đạt 149,4 tỷ USD, tăng 71,0%.",
+    "Tính chung 10 tháng, cán cân vẫn nhập siêu 12,06 tỷ USD (cùng kỳ xuất siêu 19,28 tỷ USD) vì nhập khẩu tăng 37,6%, nhanh hơn xuất khẩu tăng 27,7%.",
+    "Giải ngân đầu tư công tháng 10 đạt 121,6 nghìn tỷ đồng (+34,7%), nâng 10 tháng lên 780,1 nghìn tỷ đồng (+23,7%). FDI đăng ký 10 tháng đạt 54,85 tỷ USD (+74,0%), FDI giải ngân 24,08 tỷ USD (+13,1%)."
+   ],
+   "table": {
+    "head": [
+     "Chỉ tiêu",
+     "10/2026",
+     "9/2026",
+     "10/2025"
+    ],
+    "rows": [
+     [
+      "Xuất khẩu (tỷ USD)",
+      "64,67",
+      "59,75",
+      "42,11"
+     ],
+     [
+      "Nhập khẩu (tỷ USD)",
+      "57,36",
+      "58,44",
+      "39,63"
+     ],
+     [
+      "Cán cân thương mại (tỷ USD)",
+      "7,31",
+      "1,27",
+      "2,49"
+     ],
+     [
+      "Đầu tư công tháng (nghìn tỷ đồng)",
+      "121,64",
+      "114,37",
+      "90,28"
+     ]
+    ]
+   },
+   "note": "Số liệu theo báo cáo của Shinhan Securities Vietnam (nguồn: Tổng cục Thống kê, FiinPro-X). Mọi nhận định chỉ mang tính chất tham khảo."
+  },
+  {
+   "t": "2026-11-19 08:50",
+   "tag": "Vĩ mô",
+   "title": "IIP tháng 10 tăng 14,98%, PMI 52,3 nhưng đơn hàng mới tăng chậm nhất",
+   "sum": "Sản xuất công nghiệp 10 tháng tăng 12,36%, cao nhất từ năm 2019. Bán lẻ tháng 10 tăng 14,74%, nhưng cấu phần của PMI yếu hơn chỉ số tổng.",
+   "src": "Shinhan Securities Vietnam, Cập nhật Kinh tế Việt Nam tháng 10/2026",
+   "points": [
+    "IIP tháng 10 tăng 14,98% so với cùng kỳ, nhanh nhất kể từ tháng 7. Lũy kế 10 tháng tăng 12,36%, mức cao nhất giai đoạn 2019–2026. Chế biến, chế tạo tăng 15,73% và điện, khí đốt tăng 15,65%, khai khoáng chậm lại còn 4,88%.",
+    "PMI tăng lên 52,3 từ 51,9, tháng thứ 16 liên tiếp trên 50. Tuy nhiên đơn hàng mới tăng chậm nhất trong chuỗi, đơn hàng xuất khẩu giảm, việc làm giảm tháng thứ ba. Một phần điểm số đến từ thời gian giao hàng kéo dài.",
+    "Tổng mức bán lẻ và doanh thu dịch vụ tháng 10 tăng 14,74% (10 tháng tăng 13,5%, sau loại trừ giá tăng 7,7%). Khách quốc tế đạt 1,85 triệu lượt, lũy kế 10 tháng 19,5 triệu lượt (+13,8%)."
+   ],
+   "table": {
+    "head": [
+     "Chỉ tiêu",
+     "10/2026",
+     "9/2026",
+     "10/2025"
+    ],
+    "rows": [
+     [
+      "IIP so với cùng kỳ",
+      "14,98%",
+      "14,17%",
+      "10,80%"
+     ],
+     [
+      "PMI (điểm)",
+      "52,3",
+      "51,9",
+      "54,5"
+     ],
+     [
+      "Bán lẻ so với cùng kỳ",
+      "14,74%",
+      "14,12%",
+      "7,20%"
+     ]
+    ]
+   },
+   "note": "Số liệu theo báo cáo của Shinhan Securities Vietnam (nguồn: Tổng cục Thống kê, S&P Global). Mọi nhận định chỉ mang tính chất tham khảo."
+  },
+  {
+   "t": "2026-11-19 08:45",
+   "tag": "Vĩ mô",
+   "title": "Lãi suất liên ngân hàng tăng trở lại, ngân hàng Nhà nước giảm lãi suất huy động",
+   "sum": "Lãi suất huy động bình quân tại nhóm ngân hàng thương mại Nhà nước giảm còn 5,40% từ 5,90%, lần giảm đầu tiên kể từ tháng 4/2024. Tỷ giá USD/VND đóng tháng ở 26.140.",
+   "src": "Shinhan Securities Vietnam, Cập nhật Kinh tế Việt Nam tháng 10/2026",
+   "points": [
+    "Lãi suất huy động bình quân tại ngân hàng thương mại Nhà nước giảm xuống 5,40% từ 5,90%, lần giảm đầu tiên kể từ tháng 4/2024.",
+    "Lãi suất liên ngân hàng tăng trở lại: qua đêm lên 5,79% ngày 30/10 (từ 0,87% cuối tháng 9), kỳ hạn 3 tháng lên 7,47% từ 6,92%. Ngân hàng Nhà nước bơm tiền qua kênh mua kỳ hạn, tập trung vào tuần cuối tháng.",
+    "Tỷ giá USD/VND thị trường tự do đóng cửa tháng 10 ở 26.140, VND yếu đi 1,0% so với tháng trước nhưng vẫn mạnh hơn 2,3% so với cuối năm 2025. Lợi suất trái phiếu Chính phủ 10 năm ở 4,47%."
+   ],
+   "note": "Số liệu theo báo cáo của Shinhan Securities Vietnam (nguồn: Ngân hàng Nhà nước, FiinPro-X). Mọi nhận định chỉ mang tính chất tham khảo."
+  },
+  {
    "t": "2026-11-18 16:25",
    "tag": "Thị trường",
    "title": "Khối ngoại bán ròng mạnh phiên 18/11, FPT và VIC bị bán ròng nhiều nhất",
