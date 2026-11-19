@@ -33,8 +33,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q --depth=1 origin data && git checkout -q -f -B data FETCH_HEAD || true
           START=$(date +%s)
-          FIRST=1
           while true; do
             # Giá toàn bộ cổ phiếu (TradingView, chậm khoảng 15 phút) ghi vào live.json
             python3 - <<'PY' || echo "Lấy giá cổ phiếu lỗi, bỏ qua vòng này"
@@ -66,18 +66,20 @@ jobs:
           PY
             then
               mv quote.tmp quote.json
-              git add quote.json
-              [ -f live.json ] && git add live.json
-              if [ "$FIRST" = 1 ]; then
-                git commit -q -m "Số liệu thị trường"
-                FIRST=0
-              else
+            else
+              echo "Lấy chỉ số FPTS lỗi hoặc thiếu chỉ số, giữ số cũ"
+            fi
+            # Ghi nhận bất kỳ thay đổi nào (chỉ số và/hoặc giá cổ phiếu), không để cái này chặn cái kia
+            [ -f quote.json ] && git add quote.json
+            [ -f live.json ] && git add live.json
+            if [ -n "$(git status --porcelain)" ]; then
+              if git rev-parse -q --verify HEAD >/dev/null; then
                 git commit -q --amend -m "Số liệu thị trường $(date -u +%H:%M:%S)"
+              else
+                git commit -q -m "Số liệu thị trường"
               fi
               git push -q -f origin HEAD:data || echo "Đẩy dữ liệu lỗi, thử lại ở vòng sau"
               echo "Đã cập nhật $(date -u +%H:%M:%S) UTC"
-            else
-              echo "Lấy dữ liệu lỗi hoặc thiếu chỉ số, bỏ qua vòng này"
             fi
             NOW=$(date +%s)
             HHMM=$(date -u +%H%M)
