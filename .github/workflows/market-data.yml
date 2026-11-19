@@ -21,7 +21,7 @@ concurrency:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - name: Lấy số liệu từ FPTS mỗi phút và ghi vào nhánh data
         env:
@@ -83,8 +83,8 @@ jobs:
             fi
             NOW=$(date +%s)
             HHMM=$(date -u +%H%M)
-            # Dừng sau 14 phút, hoặc khi hết giờ giao dịch (sau 15:12 giờ Việt Nam)
-            if [ $((NOW-START)) -ge 840 ] || [ "$HHMM" -ge 0812 ] || [ "$HHMM" -lt 0155 ]; then
+            # Dừng sau 28 phút, hoặc khi hết giờ giao dịch (sau 15:12 giờ Việt Nam)
+            if [ $((NOW-START)) -ge 1680 ] || [ "$HHMM" -ge 0812 ] || [ "$HHMM" -lt 0155 ]; then
               break
             fi
             sleep 60
