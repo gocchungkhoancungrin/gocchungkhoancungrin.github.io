@@ -607,7 +607,7 @@ footer b{color:var(--fg)}
           </div>
         </div>
       </div>
-      <div class="sample" role="note">Mọi khuyến nghị chỉ mang tính chất tham khảo. Lãi/lỗ tính từ giá khuyến nghị đến giá hiện tại, chưa gồm phí và thuế. Giá khuyến nghị là giá tại thời điểm đưa ra khuyến nghị; giá hiện tại là giá đóng cửa phiên gần nhất.</div>
+      <div class="sample" role="note">Mọi khuyến nghị chỉ mang tính chất tham khảo. Lãi/lỗ tính từ giá khuyến nghị đến giá hiện tại, chưa gồm phí và thuế; với khuyến nghị theo vùng giá (HPG), lãi/lỗ tính từ giữa vùng. Giá khuyến nghị là giá tại thời điểm đưa ra khuyến nghị; giá hiện tại là giá đóng cửa phiên gần nhất.</div>
     </section>
 
     <section id="ngan-hang">
@@ -870,7 +870,8 @@ footer b{color:var(--fg)}
     {t:'VCB',co:'Vietcombank',rec:'buy',recText:'MUA',date:'2026-11-17',price:53.2,target:73.0,stop:null,note:'Lợi nhuận tăng nhờ NIM cải thiện. P/E 2026 ước 11,2 lần.'},
     {t:'HDB',co:'HDBank',rec:'buy',recText:'MUA',date:'2026-11-17',price:22.3,target:27.2,stop:null,note:'ROE dự phóng 2026 khoảng 24,7%, thuộc nhóm cao nhất ngành.'},
     {t:'CTG',co:'VietinBank',rec:'buy',recText:'MUA',date:'2026-11-17',price:30.95,target:48.8,stop:null,note:'Kết quả 9T2026 vượt kỳ vọng, NIM cải thiện. P/E 2026 ước 6,6 lần.'},
-    {t:'TLG',co:'Thiên Long',rec:'buy',recText:'MUA',date:'2026-11-19',target:65.0,stop:null,note:'Kokuyo (Nhật Bản) mua lại 65,01% vốn, được cơ quan cạnh tranh chấp thuận có điều kiện tháng 9/2026, mở rộng sang ASEAN. Doanh thu quý 1/2026 tăng 25,9%, biên lợi nhuận gộp 48,2%.'}
+    {t:'TLG',co:'Thiên Long',rec:'buy',recText:'MUA',date:'2026-09-15',price:52.8,target:65.0,stop:null,note:'Kokuyo (Nhật Bản) mua lại 65,01% vốn, được cơ quan cạnh tranh chấp thuận có điều kiện tháng 9/2026, mở rộng sang ASEAN. Doanh thu quý 1/2026 tăng 25,9%, biên lợi nhuận gộp 48,2%.'}
+    {t:'HPG',co:'Hòa Phát',rec:'buy',recText:'MUA',date:'2026-10-12',price:20.6,priceText:'20,5 – 20,7',target:null,stop:19.8,note:'HPG thoát xu hướng giảm ngắn hạn, sẽ kiểm tra xu hướng giảm trung hạn quanh 21,2 và kỳ vọng vượt qua được. Vùng mua mới hoặc mua thêm: 20,5 – 20,7. Nhu cầu thép trong bối cảnh đẩy mạnh đầu tư công là rất lớn nên cơ bản HPG rất tiềm năng, nhưng dòng tiền thị trường chưa ủng hộ trong thời gian qua.'}
   ];
   var PBASE='https://raw.githubusercontent.com/gocchungkhoancungrin/gocchungkhoancungrin.github.io/stocks/hist/';
   function fmtPrice(n){return n.toLocaleString('vi-VN',{minimumFractionDigits:1,maximumFractionDigits:2})}
@@ -879,14 +880,14 @@ footer b{color:var(--fg)}
   function pkRow(p,hs){
     var last=hs&&hs.length?hs[hs.length-1]:null,ent=p.price||null;
     var now=last?last[4]/1000:null,pl=(ent&&now)?(now-ent)/ent*100:null;
-    var up=now?(p.target-now)/now*100:null;
+    var up=(now&&p.target)?(p.target-now)/now*100:null;
     return '<tr><td><span class="tick">'+p.t+'</span><span class="co">'+p.co+'</span></td>'+
       '<td><span class="pill '+p.rec+'">'+p.recText+'</span></td>'+
       '<td class="dt">'+dmy(p.date)+'</td>'+
-      '<td class="r num">'+(ent?fmtPrice(ent):'<span class="pend">Sắp cập nhật</span>')+'</td>'+
+      '<td class="r num">'+(ent?(p.priceText||fmtPrice(ent)):'<span class="pend">Sắp cập nhật</span>')+'</td>'+
       '<td class="r num">'+(now?fmtPrice(now):'–')+'</td>'+
       '<td class="r pl '+(pl===null?'':(pl>0?'up':(pl<0?'down':'')))+'">'+(pl===null?'–':pct(pl,true))+'</td>'+
-      '<td class="r num">'+fmtPrice(p.target)+'</td>'+
+      '<td class="r num">'+(p.target?fmtPrice(p.target):'<span class="pend">Sắp cập nhật</span>')+'</td>'+
       '<td class="r num up">'+(up===null?'–':pct(up,true))+'</td>'+
       '<td class="r num">'+(p.stop?fmtPrice(p.stop):'<span class="pend">Sắp cập nhật</span>')+'</td>'+
       '<td class="note">'+p.note+'</td></tr>';
