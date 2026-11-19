@@ -868,7 +868,6 @@ footer b{color:var(--fg)}
 
   var PICKS=[
     {t:'VCB',co:'Vietcombank',rec:'buy',recText:'MUA',date:'2026-11-17',price:53.2,target:73.0,stop:49,note:'Lợi nhuận tăng nhờ NIM cải thiện. P/E 2026 ước 11,2 lần.'},
-    {t:'CTG',co:'VietinBank',rec:'buy',recText:'MUA',date:'2026-11-17',price:30.95,target:48.8,stop:29,note:'Kết quả 9T2026 vượt kỳ vọng, NIM cải thiện. P/E 2026 ước 6,6 lần.'},
     {t:'TLG',co:'Thiên Long',rec:'buy',recText:'MUA',date:'2026-09-15',price:52.8,target:65.0,stop:50,note:'Kokuyo (Nhật Bản) mua lại 65,01% vốn, được cơ quan cạnh tranh chấp thuận có điều kiện tháng 9/2026, mở rộng sang ASEAN. Doanh thu quý 1/2026 tăng 25,9%, biên lợi nhuận gộp 48,2%.'},
     {t:'HPG',co:'Hòa Phát',rec:'buy',recText:'MUA',date:'2026-10-12',price:20.6,priceText:'20,5 – 20,7',target:25.0,stop:19.8,note:'HPG thoát xu hướng giảm ngắn hạn, sẽ kiểm tra xu hướng giảm trung hạn quanh 21,2 và kỳ vọng vượt qua được. Vùng mua mới hoặc mua thêm: 20,5 – 20,7. Nhu cầu thép trong bối cảnh đẩy mạnh đầu tư công là rất lớn nên cơ bản HPG rất tiềm năng, nhưng dòng tiền thị trường chưa ủng hộ trong thời gian qua.'}
   ];
@@ -904,6 +903,37 @@ footer b{color:var(--fg)}
     });
   }
   pkRender();pkLoad();setInterval(function(){if(!document.hidden)pkLoad()},1800000);
+
+  /* Danh mục riêng: dữ liệu mã hóa AES-GCM, chỉ giải mã khi nhập đúng mật khẩu. Mở bằng cách chạm 5 lần vào tiêu đề mục này, hoặc thêm #rin vào địa chỉ. */
+  var PRIV={"s":"F/+0oBCR5QgfGLk5uBEfxw==","i":"xiPN5CcxNSb7Er9D","c":"sZnz3sshNr4wf5ShksTFJEOxsnmUaiy5KWgE/j77uyL0URTPSLJ5Ucto6dpwx4nY8AGsDI0CtuMgdnYEfA6dc7F8357UXJXvsV8nubyso7tjq5pEgUoZZkVUcFBnfN66BQinBxbePOecd7BQKZbJwOZLFnAjXVtCMy1t5906jVV5LPpeTTd30cHGHgVIvxEeEuJplAKuovX4JmLQROHvZIiQsHBue1u9BDzDgeaNu77sDnCVd2yyeEAly0JIYpNuQJwv3wD7d8wOh8oqu/hgBFnJNcWXqpktsln3xFph02G24T5p"};
+  function b64(s){var b=atob(s),a=new Uint8Array(b.length),i;for(i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
+  function pkUnlock(pw){
+    var enc=new TextEncoder();
+    return crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveKey']).then(function(k){
+      return crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(PRIV.s),iterations:200000,hash:'SHA-256'},k,{name:'AES-GCM',length:256},false,['decrypt'])
+    }).then(function(key){return crypto.subtle.decrypt({name:'AES-GCM',iv:b64(PRIV.i)},key,b64(PRIV.c))}).then(function(buf){
+      var extra=JSON.parse(new TextDecoder().decode(buf));
+      extra.forEach(function(x){if(!PICKS.some(function(p){return p.t===x.t}))PICKS.push(x)});
+      try{sessionStorage.setItem('pkpw',pw)}catch(e){}
+      pkRender();pkLoad();return true;
+    });
+  }
+  function pkAsk(){
+    if(document.getElementById('pk-ask'))return;
+    var d=document.createElement('div');d.id='pk-ask';
+    d.style.cssText='position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);padding:16px';
+    d.innerHTML='<form style="background:var(--surface,#151b18);border:1px solid var(--line,#2a332e);border-radius:14px;padding:20px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:12px"><label style="font-size:14px">Mật khẩu</label><input type="password" autocomplete="off" style="padding:10px 12px;border-radius:8px;border:1px solid var(--line,#2a332e);background:transparent;color:inherit;font-size:16px"><div id="pk-err" style="color:#ff7a7a;font-size:13px;min-height:16px"></div><div style="display:flex;gap:8px"><button type="submit" style="flex:1;padding:10px;border-radius:8px;border:0;background:var(--accent,#9be3b0);color:#0a0e0c;font-weight:600">Mở</button><button type="button" id="pk-x" style="padding:10px 14px;border-radius:8px;border:1px solid var(--line,#2a332e);background:transparent;color:inherit">Đóng</button></div></form>';
+    document.body.appendChild(d);
+    var inp=d.querySelector('input');inp.focus();
+    d.querySelector('#pk-x').onclick=function(){d.remove()};
+    d.querySelector('form').onsubmit=function(e){e.preventDefault();pkUnlock(inp.value).then(function(){d.remove()}).catch(function(){d.querySelector('#pk-err').textContent='Sai mật khẩu'})};
+  }
+  (function(){
+    var n=0,t=0,h=document.querySelector('#khuyen-nghi h2');
+    if(h)h.addEventListener('click',function(){var now=Date.now();n=(now-t<1500)?n+1:1;t=now;if(n>=5){n=0;pkAsk()}});
+    try{var s=sessionStorage.getItem('pkpw');if(s)pkUnlock(s).catch(function(){})}catch(e){}
+    if(location.hash==='#rin')pkAsk();
+  })();
 
 
   (function(){
