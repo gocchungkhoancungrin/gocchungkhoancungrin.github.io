@@ -905,7 +905,7 @@ footer b{color:var(--fg)}
   pkRender();pkLoad();setInterval(function(){if(!document.hidden)pkLoad()},1800000);
 
   /* Danh mục riêng: dữ liệu mã hóa AES-GCM, chỉ giải mã khi nhập đúng mật khẩu. Mở bằng cách chạm 5 lần vào tiêu đề mục này, hoặc thêm #rin vào địa chỉ. */
-  var PRIV={"s":"F/+0oBCR5QgfGLk5uBEfxw==","i":"xiPN5CcxNSb7Er9D","c":"sZnz3sshNr4wf5ShksTFJEOxsnmUaiy5KWgE/j77uyL0URTPSLJ5Ucto6dpwx4nY8AGsDI0CtuMgdnYEfA6dc7F8357UXJXvsV8nubyso7tjq5pEgUoZZkVUcFBnfN66BQinBxbePOecd7BQKZbJwOZLFnAjXVtCMy1t5906jVV5LPpeTTd30cHGHgVIvxEeEuJplAKuovX4JmLQROHvZIiQsHBue1u9BDzDgeaNu77sDnCVd2yyeEAly0JIYpNuQJwv3wD7d8wOh8oqu/hgBFnJNcWXqpktsln3xFph02G24T5p"};
+  var PRIV={"s":"wOPOgVSIoLHuJm6Sr1zEyA==","i":"p26wLDBW2YbJTqkO","c":"wMfz37R1fXbRAVk0pnXmFDTikuzMIOuAtoYrC9Hw7CEX3J+lIMhXTRviMg7+dW7z7R2Z7VOEdpbwOI4QNsT7JqzcWe9Q5U7LYw0sRrBPItRetAazZitC1zy9G9ErFaWfCaMyuqb9VPYPQWDizJ/r7N6uhvLAsjWPN8PD5x4cj/fZw9vDlsNXKw3DRoCTKm1ne8kKDCGQlLFCoc6rdnhfEepUJOcRdVrYvfPvRIL5rJENd5n81jd/oZ3VCv0IGyzXtZrH+RBX0Kjqm1Xi+4gX/lqudQmlKb/SEU5WEpgzQgkD4E2I"};
   function b64(s){var b=atob(s),a=new Uint8Array(b.length),i;for(i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
   function pkUnlock(pw){
     var enc=new TextEncoder();
