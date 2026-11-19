@@ -194,7 +194,21 @@ th.r,td.r{text-align:right}
 .teaser-cta h3{font-size:clamp(18px,2.6vw,22px);font-weight:800}
 .teaser-cta p{color:var(--muted);font-size:14.5px;max-width:42ch}
 .cta-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
-@media (max-width:700px){#khuyen-nghi table{min-width:0}#khuyen-nghi th:nth-child(6),#khuyen-nghi td:nth-child(6){display:none}#khuyen-nghi th,#khuyen-nghi td{padding:12px 8px;font-size:14px}#khuyen-nghi th{font-size:11px;letter-spacing:.03em}#khuyen-nghi .tick{font-size:16px}#khuyen-nghi .pill{padding:3px 8px;font-size:11px}}
+#khuyen-nghi .pk-table{min-width:1080px}
+#khuyen-nghi td,#khuyen-nghi th{padding:14px 12px}
+#khuyen-nghi .note{min-width:260px;max-width:340px}
+#khuyen-nghi td.num,#khuyen-nghi td.r{white-space:nowrap}
+#khuyen-nghi .dt{white-space:nowrap;font-family:var(--font-mono);font-size:14px;color:var(--muted)}
+#khuyen-nghi .pend{color:var(--muted);font-size:13px;font-weight:500}
+#khuyen-nghi .pl{font-family:var(--font-mono);font-weight:700}
+#khuyen-nghi .pl.up{color:var(--up)}#khuyen-nghi .pl.down{color:var(--down)}
+.pk-hint{display:none;margin:0 0 8px;text-align:center;font-size:12.5px;color:var(--muted)}
+@media (max-width:700px){
+  .pk-hint{display:block}
+  #khuyen-nghi th:first-child,#khuyen-nghi td:first-child{position:sticky;left:0;z-index:2;background:var(--surface);box-shadow:1px 0 0 var(--line)}
+  #khuyen-nghi th:first-child{background:var(--surface2)}
+  #khuyen-nghi th{font-size:11px;letter-spacing:.03em}
+}
 @media (max-width:700px){.trow{grid-template-columns:1fr 1fr 1fr;gap:12px}.trow .b:nth-child(n+4){display:none}.teaser{min-height:260px}}
 .contact{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;min-width:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
@@ -553,18 +567,23 @@ footer b{color:var(--fg)}
     <section id="khuyen-nghi">
       <div class="sec-head">
         <h2><em>05 /</em>Cổ phiếu khuyến nghị</h2>
-        <span class="stamp">Giá tham chiếu ngày 17/11/2026</span>
+        <span class="stamp" id="pk-stamp">Giá đóng cửa cuối ngày</span>
       </div>
+      <p class="pk-hint" aria-hidden="true">← Kéo sang trái, phải để xem đầy đủ →</p>
       <div class="recbox">
-        <div class="tablebox">
-          <table>
+        <div class="tablebox pk-scroll">
+          <table class="pk-table">
             <thead>
               <tr>
                 <th>Mã cổ phiếu</th>
                 <th>Khuyến nghị</th>
-                <th class="r">Giá 17/11</th>
+                <th>Ngày khuyến nghị</th>
+                <th class="r">Giá khuyến nghị</th>
+                <th class="r" id="pk-now-h">Giá đóng cửa</th>
+                <th class="r">Lãi / lỗ</th>
                 <th class="r">Giá mục tiêu</th>
                 <th class="r">Tiềm năng</th>
+                <th class="r">Giá cắt lỗ</th>
                 <th>Luận điểm</th>
               </tr>
             </thead>
@@ -587,7 +606,7 @@ footer b{color:var(--fg)}
           </div>
         </div>
       </div>
-      <div class="sample" role="note">Mọi khuyến nghị chỉ mang tính chất tham khảo.</div>
+      <div class="sample" role="note">Mọi khuyến nghị chỉ mang tính chất tham khảo. Giá lấy theo giá đóng cửa cuối ngày. Lãi/lỗ tính từ giá đóng cửa ngày khuyến nghị đến giá đóng cửa gần nhất, chưa gồm phí và thuế.</div>
     </section>
 
     <section id="ngan-hang">
@@ -846,22 +865,46 @@ footer b{color:var(--fg)}
   renderTiles(FALLBACK.rows);
   loop();
 
-  var picks=[
-    {t:'VCB',co:'Vietcombank',rec:'buy',recText:'MUA',now:53.2,target:73.0,note:'Lợi nhuận tăng nhờ NIM cải thiện. P/E 2026 ước 11,2 lần.'},
-    {t:'HDB',co:'HDBank',rec:'buy',recText:'MUA',now:22.3,target:27.2,note:'ROE dự phóng 2026 khoảng 24,7%, thuộc nhóm cao nhất ngành.'},
-    {t:'CTG',co:'VietinBank',rec:'buy',recText:'MUA',now:30.95,target:48.8,note:'Kết quả 9T2026 vượt kỳ vọng, NIM cải thiện. P/E 2026 ước 6,6 lần.'},
-    {t:'FRT',co:'FPT Retail',rec:'buy',recText:'MUA',now:146.0,target:192.0,note:'Lợi nhuận 2026 ước tăng gần gấp đôi nhờ chuỗi Long Châu.'}
+  var PICKS=[
+    {t:'VCB',co:'Vietcombank',rec:'buy',recText:'MUA',date:'2026-11-17',target:73.0,stop:null,note:'Lợi nhuận tăng nhờ NIM cải thiện. P/E 2026 ước 11,2 lần.'},
+    {t:'HDB',co:'HDBank',rec:'buy',recText:'MUA',date:'2026-11-17',target:27.2,stop:null,note:'ROE dự phóng 2026 khoảng 24,7%, thuộc nhóm cao nhất ngành.'},
+    {t:'CTG',co:'VietinBank',rec:'buy',recText:'MUA',date:'2026-11-17',target:48.8,stop:null,note:'Kết quả 9T2026 vượt kỳ vọng, NIM cải thiện. P/E 2026 ước 6,6 lần.'},
+    {t:'TLG',co:'Thiên Long',rec:'buy',recText:'MUA',date:'2026-11-19',target:65.0,stop:null,note:'Kokuyo (Nhật Bản) mua lại 65,01% vốn, được cơ quan cạnh tranh chấp thuận có điều kiện tháng 9/2026, mở rộng sang ASEAN. Doanh thu quý 1/2026 tăng 25,9%, biên lợi nhuận gộp 48,2%.'}
   ];
+  var PBASE='https://raw.githubusercontent.com/gocchungkhoancungrin/gocchungkhoancungrin.github.io/stocks/hist/';
   function fmtPrice(n){return n.toLocaleString('vi-VN',{minimumFractionDigits:1,maximumFractionDigits:2})}
-  document.getElementById('picks').innerHTML=picks.map(function(p){
-    var up=((p.target-p.now)/p.now*100).toLocaleString('vi-VN',{minimumFractionDigits:1,maximumFractionDigits:1});
+  function pct(n,sign){var s=n.toLocaleString('vi-VN',{minimumFractionDigits:1,maximumFractionDigits:1});return (sign&&n>0?'+':'')+s+'%'}
+  function dmy(d){var a=d.split('-');return a[2]+'/'+a[1]+'/'+a[0]}
+  function pkRow(p,hs){
+    var last=hs&&hs.length?hs[hs.length-1]:null,ent=null,i;
+    if(hs)for(i=0;i<hs.length;i++){if(hs[i][0]===p.date){ent=hs[i][4]/1000;break}}
+    var now=last?last[4]/1000:null,pl=(ent&&now)?(now-ent)/ent*100:null;
+    var up=now?(p.target-now)/now*100:null;
+    var wait=hs&&!ent;
     return '<tr><td><span class="tick">'+p.t+'</span><span class="co">'+p.co+'</span></td>'+
       '<td><span class="pill '+p.rec+'">'+p.recText+'</span></td>'+
-      '<td class="r num">'+fmtPrice(p.now)+'</td>'+
+      '<td class="dt">'+dmy(p.date)+'</td>'+
+      '<td class="r num">'+(ent?fmtPrice(ent):'<span class="pend">'+(hs?'Chờ chốt phiên':'–')+'</span>')+'</td>'+
+      '<td class="r num">'+(now?fmtPrice(now):'–')+'</td>'+
+      '<td class="r pl '+(pl===null?'':(pl>0?'up':(pl<0?'down':'')))+'">'+(pl===null?'–':pct(pl,true))+'</td>'+
       '<td class="r num">'+fmtPrice(p.target)+'</td>'+
-      '<td class="r num up">+'+up+'%</td>'+
+      '<td class="r num up">'+(up===null?'–':pct(up,true))+'</td>'+
+      '<td class="r num">'+(p.stop?fmtPrice(p.stop):'<span class="pend">Sắp cập nhật</span>')+'</td>'+
       '<td class="note">'+p.note+'</td></tr>';
-  }).join('');
+  }
+  var PK={},PKTRY=0;
+  function pkRender(){
+    document.getElementById('picks').innerHTML=PICKS.map(function(p){return pkRow(p,PK[p.t])}).join('');
+    var ds=Object.keys(PK).map(function(k){var a=PK[k];return a&&a.length?a[a.length-1][0]:''}).sort();
+    if(ds.length&&ds[ds.length-1]){var d=ds[ds.length-1];document.getElementById('pk-stamp').textContent='Giá đóng cửa ngày '+dmy(d);document.getElementById('pk-now-h').textContent='Giá đóng cửa '+d.slice(8)+'/'+d.slice(5,7)}
+  }
+  function pkLoad(){
+    var n=PICKS.length;
+    PICKS.forEach(function(p){
+      fetch(PBASE+p.t+'.json?t='+Date.now(),{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(a){PK[p.t]=a;pkRender()}).catch(function(){})
+    });
+  }
+  pkRender();pkLoad();setInterval(function(){if(!document.hidden)pkLoad()},1800000);
 
 
   (function(){
