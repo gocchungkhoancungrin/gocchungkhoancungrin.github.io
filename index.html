@@ -844,6 +844,7 @@ footer b{color:var(--fg)}
     var lunch=n.wd>=1&&n.wd<=5&&n.min>=690&&n.min<780;
     if(lunch&&age<4*3600*1000) setStatus('idle','Nghỉ giữa phiên · cập nhật lúc '+last.clock);
     else if(inHours&&age<1200000) setStatus('live','<b>Đang giao dịch</b> · cập nhật lúc '+last.clock);
+    else if(inHours) setStatus('idle','Đang giao dịch · số liệu cập nhật lúc '+last.clock+', đang chờ làm mới');
     else setStatus('idle','Chốt phiên '+last.date);
     return inHours&&age<1200000;
   }
